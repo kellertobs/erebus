@@ -1,9 +1,11 @@
-% InitFM    EDIFICE: Set fluid mechanics initial condition in EDIFICE
+% InitFM    EREBUS subroutine to initialise solution variables
 %
-% [CTX] = InitFM(CTX)
+% [CTX] = InitSL(CTX)
 %
-%   Function initializes the fluid mechanics solution variables for the
-%   Stokes flow problem consisting of velocities U, W, and pressure P
+%   Function initializes the solution variables for the Stokes flow  and
+%   time-dependent sub-problems comprising thevelocities U, W, and pressure
+%   P, and the temperature T, vesicularity Phi, and crystallinity Chi,
+%   respectively.
 %
 %   created   20140730  Tobias Keller
 %   modified  20170427  Tobias Keller
@@ -67,7 +69,7 @@ if strcmp(INIT.TempMode(1:4),'lava') % 'lavalake'
     
     lake   =  PIPQ2(MP.Mat,FE);
     SL.T   =  INIT.TempExt + (lake>=1.5).*(INIT.TempInt-INIT.TempExt);
-    SL.T   =  SmoothField(SL.T,1/8,round(25/CTX.FE.hzQ1^2),FE,'Q2');
+    SL.T   =  SmoothField(SL.T,1/8,round(20/CTX.FE.hzQ1^2),FE,'Q2');
 
 end
 
@@ -75,9 +77,8 @@ BC.botTmp  =  SL.T(FE.MapQ2(end,:));
 
 %*****  initialise bubble and crystal fractions  **************************
 Phi0    =  [0;0;PROP.Phi0];
-bubble  =  PIPQ2(Phi0(MP.Mat),FE) + PROP.Phi0.*PIPQ2((MP.pert+1)./2,FE).*(SL.T>=0.9.*INIT.TempInt);
-SL.Phi  =  bubble;
-SL.Phi  =  SmoothField(SL.Phi,1/8,round(25/CTX.FE.hzQ1^2),FE,'Q2');
+bubble  =  SmoothField(PIPQ2(Phi0(MP.Mat),FE),1/8,round(20/CTX.FE.hzQ1^2),FE,'Q2'); 
+SL.Phi  =  bubble + PROP.Phi0.*PIPQ2((MP.pert+1)./2,FE).*(SL.T-INIT.TempExt)./(INIT.TempInt-INIT.TempExt);
 SL.Phi  =  max(0,min(PROP.Phi0,SL.Phi));
 MP.Phi  =  max(0,min(PROP.Phi0,PQ2IP(SL.Phi,CTX.FE)));
 
