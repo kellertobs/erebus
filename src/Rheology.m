@@ -113,7 +113,7 @@ if strcmp(RHEO.Plasticity,'ON')
     elseif strcmp(CTX.FE.ElType(3:4),'P0')
         Pt  =  PQ1IP(PElQ1(CTX.SL.Pt,CTX.FE),CTX.FE) - CTX.BC.SurfPres;
     end
-    YieldStr     =  Coh + Frict.*Pt;
+    YieldStr     =  (1-MP.Phi) .* (Coh + Frict.*Pt);
     MP.YieldStr  =  max(lim,YieldStr);
     
 else

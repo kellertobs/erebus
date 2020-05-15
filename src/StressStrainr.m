@@ -1,4 +1,4 @@
-% StressStrainr    EDIFICE: Update stresses and strain rates
+% StressStrainr    EREBUS subroutine to update stresses and strain rates
 %
 % [MP]  =  StressStrainr(MP,CTX)
 %
@@ -8,7 +8,7 @@
 %   created   20140730  Tobias Keller
 %   modified  20170427  Tobias Keller
 %   modified  20200227   Tobias Keller
-
+%   modified  20200515  Tobias Keller
 
 
 function   [MP]  =  StressStrainr(MP,CTX)
@@ -88,7 +88,7 @@ MP.TII        =  SecondInv(MP.Tau);
 
 EdotV         =  MP.Tau./MP.Eta;
 EdotE         = (MP.Tau-MP.Taur)./MP.Gdt;
-EdotP         =  MP.Edot - EdotV - EdotE;
+EdotP         =  PQ1IP(PIPQ1(MP.Edot - EdotV - EdotE,FE),FE);
 
 MP.EII(:,1)   =  SecondInv(MP.Edot);
 MP.EII(:,2)   =  SecondInv(EdotV  );
