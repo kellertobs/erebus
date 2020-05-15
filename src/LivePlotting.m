@@ -74,7 +74,7 @@ if strcmp(CTX.IO.LivePlot,'ON')
     PlotField(CTX.SL.Phi.*100,CTX.FE,CTX.IO.PlotStyle);
     title('Vesicularity [vol %]')
     subplot(sp22);
-    PlotField(CTX.SL.Chi.*100,CTX.FE,CTX.IO.PlotStyle);
+    PlotField(min(CTX.RHEO.Chic,CTX.SL.Chi).*100,CTX.FE,CTX.IO.PlotStyle);
     title('Crystallinity [vol %]')
     drawnow
     
