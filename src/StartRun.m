@@ -1,7 +1,7 @@
-
-% StartRun  Start simulation run in EREBUS
+% StartRun  EREBUS subroutnie to start new simulation run or continue from previous one
 %
-%   [CTX] = StartRun(CTX)
+% [CTX] = StartRun(CTX)
+%
 %   Prepares data structures and sets initial conditions from input
 %   options. Requires as input an application context 'CTX' produced with a
 %   EREBUS parameter script
@@ -53,6 +53,11 @@ if CTX.IO.TryContinue == 1
     
 else
     
+    %*****  create output directory if not present yet
+    
+    if ~exist([CTX.IO.DataDir '/' CTX.IO.RunID],'dir'); mkdir([CTX.IO.DataDir '/' CTX.IO.RunID]); end
+
+    
     %*****  initialise timing / counting parameters  **********************
     
     CTX.TIME.total  =  0;
@@ -67,7 +72,6 @@ else
     %*****  initialise finite element grid  *******************************
     
     CTX.FE  =  InitFE(CTX.FE);
-    CTX     =  InitTopo(CTX);
     CTX.FEo =  CTX.FE;
     
     

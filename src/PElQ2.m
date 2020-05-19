@@ -1,6 +1,16 @@
+% PElQ2    EREBUS subroutine to project field from elements to Q2 nodes
+%
+% [Q2field]  =  PElQ2(Elfield,FE)
+%
+%   Function returns Q2field projected from input Elfield on elements space 
+%   to Q2-nodes space.
+%
+%   created   20161115  Tobias Keller
+%   modified  20170427  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
-function   Q2field  =  PElQ2(Elfield,FE)
+function   [Q2field]  =  PElQ2(Elfield,FE)
 
 n        =  length(Elfield(1,:));
 ElX      =  FE.CoordEl(:,1);

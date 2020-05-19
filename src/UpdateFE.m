@@ -1,5 +1,4 @@
-
-% UpdateFE    Update properties of the finite element mesh
+% UpdateFE    EREBUS subroutine to update properties of the finite element mesh
 %
 % [FE]  =  UpdateFE(FE)
 %
@@ -8,7 +7,8 @@
 %
 %   created   20140806  Tobias Keller
 %   modified  20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [FE]  =  UpdateFE(FE)

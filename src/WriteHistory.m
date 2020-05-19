@@ -1,3 +1,17 @@
+% WriteHistory    EREBUS subroutine to update the history of key metrics
+%
+% [] = WriteHistory(CTX)
+%
+%   Function calculates and writes out to file a series of key output metrics
+%   to track lava lake evolution. The metrics include heat and outgassing
+%   fluxes into the base and from the top, and min, mean and max values of
+%   solution variables and auxiliary fields on the lake surface and within
+%   the interior.
+%
+%   created   20140730  Tobias Keller
+%   modified  20170427  Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  []  =  WriteHistory(CTX)
@@ -54,7 +68,6 @@ H.bot.HeatIn(n)  =  sum((RhoM(bot(1:end-1)).*Cp.*T(bot(1:end-1)).*W(bot(1:end-1)
 
 % heat flux out of top of domain [W/m2], positive for heat loss
 H.top.HeatOut(n) =  sum(RhoM.*Cp.*(T-T0)./CTX.PHYS.TauTmp.*exp(-(FE.CoordQ2(:,2)-Surf(:))./CTX.PHYS.delta).*vol) / Atop;
-
 
 %***  record gas fluxes
 

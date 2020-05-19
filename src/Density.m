@@ -1,13 +1,13 @@
-
-% Density    EDIFICE: Update material density
+% Density    EREBUS subroutine to update material density
 %
 % [CTX] = Density(MP,CTX)
 %
-%   Function updates T-dependent density according to latest solution guess. 
+%   Function updates density of three-phase magma according to latest solution guess. 
 %
-%   created   20140730  Tobias Keller
-%   modified  20170427  Tobias Keller
+%   created   20140730   Tobias Keller
+%   modified  20170427   Tobias Keller
 %   modified  20200227   Tobias Keller
+%   modified  20200515   Tobias Keller
 
 
 function   [MP]  =  Density(MP,CTX)
@@ -15,10 +15,15 @@ function   [MP]  =  Density(MP,CTX)
 
 %*****  get densities from material types  ********************************
 
-Rho0       =  CTX.PROP.Rho;
+% ideal gas density
 MP.RhoPhi  =  CTX.PROP.MPhi.*PQ1IP(CTX.SL.Pt,CTX.FE)./CTX.PHYS.RConst./(PQ2IP(CTX.SL.T,CTX.FE)+273.15);
-MP.Rho     =  (1-MP.Phi-MP.Chi).*Rho0 + MP.Phi.*MP.RhoPhi + MP.Chi.*CTX.PROP.RhoChi;
-MP.Rho     =  MP.Rho .* (1 - CTX.PROP.alpha.*(PQ2IP(CTX.SL.T,CTX.FE)-CTX.PROP.Tsol));
+
+% T-dependent melt/crystal density
+RhoMC      =  ((1-MP.Chi).*CTX.PROP.Rho + MP.Chi.*CTX.PROP.RhoChi) ...
+           .* (1 - CTX.PROP.alpha.*(PQ2IP(CTX.SL.T,CTX.FE)-CTX.PROP.Tsol));
+
+% melt/crystal/bubble mixture density
+MP.Rho     =  (1-MP.Phi).*RhoMC + MP.Phi.*MP.RhoPhi;
 
 end
 

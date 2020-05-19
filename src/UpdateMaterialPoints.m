@@ -1,15 +1,15 @@
-
-% UpdateMaterialProps    EDIFICE: Update material properties according to current solution
+% UpdateMaterialProps    EREBUS subroutine to update material point properties
 %
 % [CTX] = UpdateMaterialProps(CTX)
 %
-%   Function updates material properties and auxiliary fields according to
-%   latest solution guess and parameters and options provided in the CTX
-%   struct.
+%   Function updates material properties and auxiliary fields on integration
+%   points according to latest solution guess and parameters and options 
+%   provided in the CTX structure.
 %
 %   created   20140730  Tobias Keller
 %   modified  20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function [CTX]  =  UpdateMaterialPoints(CTX)

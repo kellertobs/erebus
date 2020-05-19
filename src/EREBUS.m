@@ -68,7 +68,7 @@ while CTX.TIME.total < CTX.TIME.end
 %*****   Manage I/O and live plotting   ***********************************
 %**************************************************************************
     
-    PrintDiagnostics(CTX);
+    ReportDiagnostics(CTX);
     WriteHistory(CTX);
     
     if  mod(CTX.TIME.istep,CTX.IO.nwrite) == 0

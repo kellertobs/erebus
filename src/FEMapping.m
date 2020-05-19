@@ -1,13 +1,14 @@
-% FeMapping    Create mapping arrays for use in EREBUS
+% FEMapping    EREBUS subroutine to create mapping arrays for the FE mesh
 %
-% [FE] = FeMapping(FE)
+% [FE] = FEMapping(FE)
 %
-%   creates mapping arrays mapping between elements and degrees of freedom 
-%   on the FE mesh
+%   The routine creates mapping arrays mapping between elements, nodes, 
+%   integration points, and degrees of freedom on the FE mesh
 %
 %   created   20140729  Tobias Keller
 %   modified  20170427  Tobias Keller
 %   modified  20190418  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function [FE] = FEMapping(FE)
@@ -46,27 +47,27 @@ for i = 1:1:FE.nxEl
         El2P0(iel,:)   = mapEl(iel);
 
         iq1  =  i;   jq1  =  j;           
-        El2Q1(iel,:)   = [mapQ1(jq1,iq1  ),mapQ1(jq1+1,iq1  ), ...
+        El2Q1(iel,:)  =  [mapQ1(jq1,iq1  ),mapQ1(jq1+1,iq1  ), ...
                           mapQ1(jq1,iq1+1),mapQ1(jq1+1,iq1+1)  ];
                       
         iq2  =  2*i-1;   jq2  =  2*j-1;           
-        El2Q2(iel,:)   = [mapQ2(jq2,iq2  ),mapQ2(jq2+1,iq2  ), mapQ2(jq2+2,iq2  ), ...
+        El2Q2(iel,:)  =  [mapQ2(jq2,iq2  ),mapQ2(jq2+1,iq2  ), mapQ2(jq2+2,iq2  ), ...
                           mapQ2(jq2,iq2+1),mapQ2(jq2+1,iq2+1), mapQ2(jq2+2,iq2+1), ...                  
                           mapQ2(jq2,iq2+2),mapQ2(jq2+1,iq2+2), mapQ2(jq2+2,iq2+2)  ];
         
         if FE.NU == FE.NQ1
-            iv = iq1; jv = jq1;
-            El2V(iel,:)    = [mapV(jv,iv  ,1),mapV(jv,iv,  2),mapV(jv+1,iv  ,1),mapV(jv+1,iv  ,2), ...
-                              mapV(jv,iv+1,1),mapV(jv,iv+1,2),mapV(jv+1,iv+1,1),mapV(jv+1,iv+1,2)  ];
+            iv = iq1;   jv = jq1;
+            El2V(iel,:)  =  [mapV(jv,iv  ,1),mapV(jv,iv,  2),mapV(jv+1,iv  ,1),mapV(jv+1,iv  ,2), ...
+                             mapV(jv,iv+1,1),mapV(jv,iv+1,2),mapV(jv+1,iv+1,1),mapV(jv+1,iv+1,2)  ];
         else
-            iv = iq2; jv = jq2;
-            El2V(iel,:)    = [mapV(jv,iv  ,1),mapV(jv,iv,  2),mapV(jv+1,iv  ,1),mapV(jv+1,iv  ,2),mapV(jv+2,iv  ,1),mapV(jv+2,iv  ,2), ...
-                              mapV(jv,iv+1,1),mapV(jv,iv+1,2),mapV(jv+1,iv+1,1),mapV(jv+1,iv+1,2),mapV(jv+2,iv+1,1),mapV(jv+2,iv+1,2), ...
-                              mapV(jv,iv+2,1),mapV(jv,iv+2,2),mapV(jv+1,iv+2,1),mapV(jv+1,iv+2,2),mapV(jv+2,iv+2,1),mapV(jv+2,iv+2,2)  ];
+            iv = iq2;   jv = jq2;
+            El2V(iel,:)  =  [mapV(jv,iv  ,1),mapV(jv,iv,  2),mapV(jv+1,iv  ,1),mapV(jv+1,iv  ,2),mapV(jv+2,iv  ,1),mapV(jv+2,iv  ,2), ...
+                             mapV(jv,iv+1,1),mapV(jv,iv+1,2),mapV(jv+1,iv+1,1),mapV(jv+1,iv+1,2),mapV(jv+2,iv+1,1),mapV(jv+2,iv+1,2), ...
+                             mapV(jv,iv+2,1),mapV(jv,iv+2,2),mapV(jv+1,iv+2,1),mapV(jv+1,iv+2,2),mapV(jv+2,iv+2,1),mapV(jv+2,iv+2,2)  ];
         end
 
         iip =  3*i-2;   jip =  3*j-2;
-        El2IP(iel,:)   = [mapIP(jip,iip  ),mapIP(jip+1,iip  ), mapIP(jip+2,iip  ), ...
+        El2IP(iel,:)  =  [mapIP(jip,iip  ),mapIP(jip+1,iip  ), mapIP(jip+2,iip  ), ...
                           mapIP(jip,iip+1),mapIP(jip+1,iip+1), mapIP(jip+2,iip+1), ...                  
                           mapIP(jip,iip+2),mapIP(jip+1,iip+2), mapIP(jip+2,iip+2)  ];
 
@@ -86,7 +87,6 @@ FE.MapU   =  mapU;
 FE.MapW   =  mapW;
 FE.MapV   =  mapV;
 FE.MapP   =  mapP;
-FE.MapT   =  mapQ1;
 FE.El2Q1  =  El2Q1;
 FE.El2Q2  =  El2Q2;
 FE.El2IP  =  El2IP;
@@ -107,6 +107,5 @@ switch FE.ElType
         FE.El2Pn  =  El2P0;
         FE.El2Pd  =  El2P0 + 2*FE.NQ1;
 end
-FE.El2T   =  El2Q1;
 
 

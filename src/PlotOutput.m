@@ -1,6 +1,37 @@
-% preview MOR model output as time series
+% PlotOutput    EREBUS subroutine to plot and print results as time series
+%
+% [CTX] = PlotOutput(RunID,start,step,stop,fldname,varargin)
+%
+%   Plots time series of specified model output field in various styles and
+%   prints to file if requested. The routine returns the context struct
+%   with model output of last requested time frame.
+%
+%   RunID   : input run identifier (string)
+%   start   : input first of output frame sequence to visualise (integer)
+%   step    : input step size of output frame sequence to visualise (integer)
+%   stop    : input last of output frame sequence to visualise (integer)
+%   fldname : input variable name of field to be visualised (string)
+%
+%   PlotOutput(...,style): style = 'img', 'srf', 'qui', 'one' (string) selects 
+%   plot styles imagesc, surface, quiver (only for velocity fields), and 
+%   1-dimensional lineplots, respectively.
 
-function  [CTX] = PlotOutput(CTX,start,step,stop,name,varargin)
+%   PlotOutput(...,scale): scale = 'lin'/'log' (string) sets linear/logarithmic 
+%   scale, respectively. Default is linear.
+%
+%   PlotOutput(...,hold): hold = 'hold', 'hold on' (string) switches figure 
+%   hold on. Only relevant for plotting time series of 1-D plots into same 
+%   figure. Default is off.
+%
+%   PlotOutput(...,print): print = 'print' (string) causes routine to print
+%   visualised figure to file. Default is off.
+%
+%   created   20170427  Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
+
+
+function  [CTX] = PlotOutput(RunID,start,step,stop,fldname,varargin)
 
 load FireAndIce;
 
@@ -26,7 +57,7 @@ while n < length(varargin)
          || strcmp(varargin{n}(1:3),'div') || strcmp(varargin{n}(1:3),'mul'))
             oper = varargin{n};
             n    = n+1;
-            name2 = varargin{n};
+            fldname2 = varargin{n};
         elseif strcmp(varargin{n}(1:3),'fli')
             flipcmap = 1;
         elseif strcmp(varargin{n}(1:3),'hol')
@@ -51,17 +82,17 @@ while n < length(varargin)
     end
 end
 
-if strcmp(style(1:3),'qui') || strcmp(name(1),'V')
-    if (strcmp(name,'U') || strcmp(name,'W') || strcmp(name,'V'))
-        name  = 'V';
+if strcmp(style(1:3),'qui') || strcmp(fldname(1),'V')
+    if (strcmp(fldname,'U') || strcmp(fldname,'W') || strcmp(fldname,'V'))
+        fldname  = 'V';
         uname = 'U';
         wname = 'W';
-    elseif length(name)==2 && (strcmp(name(1),'U') || strcmp(name(1),'W') || strcmp(name(1),'V'))
-        name  = ['V',name(2)];
-        uname = ['U',name(2)];
-        wname = ['W',name(2)];
+    elseif length(fldname)==2 && (strcmp(fldname(1),'U') || strcmp(fldname(1),'W') || strcmp(fldname(1),'V'))
+        fldname  = ['V',fldname(2)];
+        uname = ['U',fldname(2)];
+        wname = ['W',fldname(2)];
     else
-        disp('Need to pass a velocity field for quiver plot!');
+        disp('Need to pass a velocity name for quiver plot!');
         disp('Ignoring quiver, plotting as image instead.');
         scale = 'lin';
     end
@@ -76,8 +107,11 @@ end
     
 for frame=start:step:stop
     
-    if strcmp(style(1:3),'qui') || strcmp(name(1),'V')
-        CTX.SL.(name) = sqrt(CTX.SL.(uname).^2 + CTX.SL.(wname).^2);
+    filename = ['../out/' RunID '/' RunID '_' num2str(frame) '.mat'];
+    load(filename,'CTX');
+    
+    if strcmp(style(1:3),'qui') || strcmp(fldname(1),'V')
+        CTX.SL.(fldname) = sqrt(CTX.SL.(uname).^2 + CTX.SL.(wname).^2);
     end
     
     time = CTX.TIME.total;
@@ -107,9 +141,9 @@ for frame=start:step:stop
         time  = time/1e6/yr;
     end
     
-    if any(strcmp(fieldnames(CTX.SL),name))
+    if any(strcmp(fieldnames(CTX.SL),fldname))
         A = CTX.SL;
-    elseif any(strcmp(fieldnames(CTX.MP),name))
+    elseif any(strcmp(fieldnames(CTX.MP),fldname))
         A = CTX.MP;
     else
         error('Specified field not found in any of the output structures.')
@@ -119,35 +153,35 @@ for frame=start:step:stop
         field      = zeros(length(CTX.SL.(uname)),3);
         field(:,1) = A.(uname);
         field(:,2) = A.(wname);
-        field(:,3) = A.( name);
+        field(:,3) = A.( field);
     else
-        field  = A.(name)(:,comp);
-        if exist('name2','var') && ischar(name2); field2 = A.(name2)(:,comp); end
+        field  = A.(fldname)(:,comp);
+        if exist('name2','var') && ischar(fldname2); field2 = A.(fldname2)(:,comp); end
     end
     
     if strcmp(oper(1:3),'sub')
-        if ischar(name2)
+        if ischar(fldname2)
             field = field - field2;
         else
-            field = field - name2;
+            field = field - fldname2;
         end
     elseif strcmp(oper(1:3),'add')
-        if ischar(name2)
+        if ischar(fldname2)
             field = field + field2;
         else
-            field = field + name2;
+            field = field + fldname2;
         end
     elseif strcmp(oper(1:3),'div')
-        if ischar(name2)
+        if ischar(fldname2)
             field = field ./ field2;
         else
-            field = field ./ name2;
+            field = field ./ fldname2;
         end
     elseif strcmp(oper(1:3),'mul')
-        if ischar(name2)
+        if ischar(fldname2)
             field = field .* field2;
         else
-            field = field .* name2;
+            field = field .* fldname2;
         end
     end
         
@@ -155,7 +189,7 @@ for frame=start:step:stop
     if strcmp(scale(1:3),'abs'); field = abs(field); end
     
     if hzv
-        if any(strcmp(name,{'U';'W';'V'}))
+        if any(strcmp(fldname,{'U';'W';'V'}))
             k      =  size(field,2);
             wk     =  reshape(field,CTX.FE.nzQ2,CTX.FE.nxQ2,k);
             wk     =  wk - mean(wk,2);
@@ -211,10 +245,10 @@ for frame=start:step:stop
     end
     
     set(gca,'TicklabelInterpreter','Latex','FontSize',15);
-    title([name,'; ',num2str(time,'%1.2f'),tunit],'Interpreter','Latex','FontSize',18); drawnow;
+    title([fldname,'; ',num2str(time,'%1.2f'),tunit],'Interpreter','Latex','FontSize',18); drawnow;
     
     if printfig
-        print(fh,format,res,rend,[CTX.IO.DataDir '/' CTX.IO.RunID '/' CTX.IO.RunID '_' name '_' num2str(frame)],'-loose');
+        print(fh,format,res,rend,[CTX.IO.DataDir '/' CTX.IO.RunID '/' CTX.IO.RunID '_' fldname '_' num2str(frame)],'-loose');
     end
 end
 

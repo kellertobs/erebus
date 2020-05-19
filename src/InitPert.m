@@ -1,16 +1,17 @@
-% InitPert    EDIFICE: Initialise reference perturbation field
+% InitPert    EREBUS subroutine to initialise random perturbation field
 %
 % [pert]  =  InitPert(FE,n,sym)
 %
-%   Initialise reference perturbation field to add noise to yield stress
-%   for triggering localized deformation. Input langrangian particle
-%   struct LP as set up by InitLP, finite element mesh struct FE as set
-%   up by InitFE. Input n is the number of smoothing steps applied to white
-%   noise; sym = 'ON' initialises a perturbation field that is symmetric
-%   around a vertical line down the middle of the domain.
+%   Initialise random perturbation field to add controlled noise to different
+%   fields to introduce heterogeneity or break symmetry. 
+%
+%   FE  : input finite-element mesh struct FE as set up by InitFE
+%   n   : input n number of smoothing steps applied to redden white noise 
+%   sym : input switch, 'ON' for perturbation field symmetric around vertical mid line of domain
 %
 %   created   20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [pert]  =  InitPert(FE,n,sym)
@@ -19,7 +20,8 @@ rng(5,'twister');
 
 %*****  produce random perturbations  *************************************
 
-a  =  randn(FE.NIP,1)*0.3;
+% initialise white noise
+a  =  rand(FE.NIP,1)-0.5;
 a  =  SmoothField(a,1,n,FE,'IP');
 
 if strcmp(sym,'ON')

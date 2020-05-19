@@ -1,3 +1,20 @@
+% PlotField    EREBUS subroutine to plot selected output field
+%
+% [] = PlotField(field,FE,style)
+%
+%   Plots specified model output field in requested style.
+%
+%   field   : input field to be visualised (float, any of El, IP, Q1, Q2 dimensions)
+%   FE      : input finite-element structure (struct)
+%   style   : input plotting style requested (string)
+%             style = 'img', 'srf', 'qui', 'one' (string) selects plot styles 
+%             imagesc, surface, quiver (only for velocity fields), and 
+%             1-dimensional lineplots, respectively.
+%
+%   created   20170427  Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
+
 
 function  [] = PlotField(field,FE,style)
 

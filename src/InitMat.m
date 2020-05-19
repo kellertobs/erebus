@@ -1,13 +1,14 @@
-% InitMat    EDIFICE: Set initial distribution of material types
+% InitMat    EREBUS subroutine to set initial distribution of material types
 %
 % [CTX] = InitMat(CTX)
 %
 %   Function initializes the distribution of material types with distinct
-%   properties throughout domain
+%   properties throughout domain.
 %
 %   created   20140730  Tobias Keller
 %   modified  20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [CTX]  =  InitMat(CTX)

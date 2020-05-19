@@ -1,15 +1,15 @@
-
-% RemeshFE    EDIFICE: Remesh distorted FE mesh
+% RemeshFE    EREBUS subroutine to remesh distorted FE mesh
 %
 % [FE] = RemeshFE(FE)
 %
-%   Remeshes finite-element mesh after deformation in full or surface
+%   Remeshes finite-element mesh after deformation in full or surface-only
 %   Lagrangian mesh mode. Surface topography is preserved on a regularly
-%   spaced mesh in horizontal direction. Distortion from matching
+%   spaced mesh in horizontal direction. Distortion from deformed surface
 %   topography is faded out with depth into the interior of the mesh.
 %
 %   created   20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [FE]  =  RemeshFE(FE)
@@ -77,7 +77,7 @@ apply_leftx     =  0;
 apply_leftz     =  0;
 apply_rightx    =  0;
 apply_rightz    =  0;
-n               =  3;
+n               =  2;
 
 if     strcmp(FE.LagrMesh,'SRF')
     apply_topz      =  1;

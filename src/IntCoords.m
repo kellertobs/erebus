@@ -1,22 +1,24 @@
-% Function returns coordinates and weights for numerical integration
-% points in natural coordinate system (local element)
+% IntCoords    EREBUS subroutine to set integration point coordinates
 %
-% [FE]  =  IntCoords(FE)
-% Function returns local coordinates of integration points PAR.Si (2,NIP)
-% and integration weights PAR.Wi (1,NIP);
+% [Si,Wi]  =  IntCoords(FE)
 %
-% sorting of integration points is
+%   Function returns local coordinates of integration points PAR.Si (2,NIP)
+%   and integration weights PAR.Wi (1,NIP) for finite-element numerical 
+%   integration scheme.
+%
+%   Integration points are numbered as follows:
 %
 %                   4
-% NIP  =  9:  1 o---o---o 7
-%               |   |5  |
-%             2 o---o---o 8
-%               |   |   |
-%             3 o---o---o 9
-%                   6   
+%   NIP  =  9:  1 o---o---o 7
+%                 |   |5  |
+%               2 o---o---o 8
+%                 |   |   |
+%               3 o---o---o 9
+%                     6   
 %
-% created  20140729 Tobias Keller
-% modified 20190418 Tobias Keller
+%   created   20140729  Tobias Keller
+%   modified  20190418  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [Si,Wi]  =  IntCoords(FE)

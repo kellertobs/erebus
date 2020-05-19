@@ -1,16 +1,17 @@
-% InitFM    EREBUS subroutine to initialise solution variables
+% InitSL    EREBUS subroutine to initialise solution variables
 %
 % [CTX] = InitSL(CTX)
 %
 %   Function initializes the solution variables for the Stokes flow  and
-%   time-dependent sub-problems comprising thevelocities U, W, and pressure
+%   time-dependent sub-problems comprising velocities U, W, and pressure
 %   P, and the temperature T, vesicularity Phi, and crystallinity Chi,
 %   respectively.
 %
 %   created   20140730  Tobias Keller
 %   modified  20170427  Tobias Keller
 %   modified  20190418  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [CTX]  =  InitSL(CTX)
@@ -78,7 +79,7 @@ BC.botTmp  =  SL.T(FE.MapQ2(end,:));
 %*****  initialise bubble and crystal fractions  **************************
 Phi0    =  [0;0;PROP.Phi0];
 bubble  =  SmoothField(PIPQ2(Phi0(MP.Mat),FE),1/8,round(20/CTX.FE.hzQ1^2),FE,'Q2'); 
-SL.Phi  =  bubble + PROP.Phi0.*PIPQ2((MP.pert+1)./2,FE).*(SL.T-INIT.TempExt)./(INIT.TempInt-INIT.TempExt);
+SL.Phi  =  bubble + PROP.Phi0.*PIPQ2((MP.pert+1)./2,FE).*(SL.T-INIT.TempExt)./(INIT.TempInt-INIT.TempExt).*(1-FE.CoordQ2(:,2)./FE.D);
 SL.Phi  =  max(0,min(PROP.Phi0,SL.Phi));
 MP.Phi  =  max(0,min(PROP.Phi0,PQ2IP(SL.Phi,CTX.FE)));
 

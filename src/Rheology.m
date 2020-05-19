@@ -1,7 +1,6 @@
-
-% Rheology    EDIFICE: Update material rheology
+% Rheology    EREBUS subroutine to update material rheology
 %
-% [CTX] = Rheology(MP,CTX)
+% [MP] = Rheology(MP,CTX)
 %
 %   Function updates visco-elasto-plastic material rheology according to
 %   the latest solution guess. Parameters and options for rheology read
@@ -10,7 +9,8 @@
 %   created   20140730  Tobias Keller
 %   modified  20170427  Tobias Keller
 %   modified  20170508  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function   [MP]  =  Rheology(MP,CTX)
@@ -32,7 +32,7 @@ EII    =  CTX.MP.EII;
 [MP]  =  ElastoPlasticity(EII,Mat,PROP,MP,RHEO,CTX);
 
 
-end
+end  % end function
 
 
 
@@ -64,11 +64,11 @@ else
     Eta     =  2./(1./Eta0 + 1./EtaNN);
     Eta     =  Eta.^thit .* MP.Eta.^(1-thit);
 
-end
+end   % end if-condition
 
 MP.Eta  =  max(RHEO.MinEta,min(RHEO.MaxEta,Eta));
 
-end
+end  % end function
 
 
 
@@ -92,20 +92,12 @@ end
 %*****  get shear and compaction failure criteria  ************************
 
 if strcmp(RHEO.Plasticity,'ON')
-    
-    %***  integrate plastic strain
-    MP.Dmg  =  max(1e-16,CTX.MPo.Dmg + (EII(:,4) - RHEO.DmgHealing).*CTX.TIME.step);
-    
+        
     %***  get cohesion/friction coeff.
     Coh    =  PROP.Coh(Mat);
     Coh    =  Coh - MP.pert.*CTX.INIT.PertCoh;
     Frict  =  PROP.Frict(Mat);
     Frict  =  Frict - MP.pert.*CTX.INIT.PertFrict;
-    
-    %***  apply damage weakening to cohesion & friction coeff.
-    DMG    =  MP.Dmg./RHEO.Dmg0;
-    Coh    =  Coh   .* RHEO.DmgDCoh  .^DMG;
-    Frict  =  Frict .* RHEO.DmgDFrict.^DMG;
     
     %***  get yield stress
     if     strcmp(CTX.FE.ElType(3:4),'Q1')
@@ -120,7 +112,7 @@ else
     
     MP.YieldStr   =  HUGE.*ones(size(MP.Plith));
     
-end
+end  % end plasticity condition
 
 
 %*****  compute effective visco-elasto-plastic properties  ****************
@@ -135,6 +127,6 @@ MP.EtaVEP   =  (1./MP.EtaVP + 1./MP.Gdt).^-1;
 MP.Xi       =  (1 + MP.Gdt ./ MP.EtaVP ).^-1;
 
 
-end
+end  % end function
 
 

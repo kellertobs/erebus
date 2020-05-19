@@ -1,17 +1,17 @@
-
-% InitFE    Create 2D finite element mesh for use in EDIFICE
+% InitFE    EREBUS subroutine to create 2D finite-element mesh
 %
 % [FE] = InitFE(FE)
 %
-%   sets  parameters related to the FE mesh and creates coordinate arrays 
-%   FE.Q1Coord (#Q1nodes,2), FE.Q2Coord (#Q2nodes,2) and 
-%   PAR.FE.ElCoord(#elements,2), containing coordinates of all nodes and 
-%   elements on the FE mesh
+%   Routine sets  parameters related to the FE mesh and creates coordinate 
+%   arrays FE.Q1Coord [#Q1-nodes, 2], FE.Q2Coord [#Q2-nodes, 2], FE.ElCoord 
+%   [#elements,2], and FE.IPCoord [#int. points, 2] containing x-/z-coordinates 
+%   of all nodes, elements and integration points on the FE mesh.
 %
 %   created   20140729  Tobias Keller
 %   modified  20170427  Tobias Keller
 %   modified  20190418  Tobias Keller
 %   modified  20200227   Tobias Keller
+%   modified  20200515   Tobias Keller
 
 
 function [FE] = InitFE(FE)
@@ -130,7 +130,7 @@ FE.CoordQ2    =  reshape(Coord,FE.NQ2,2);
 
 FE.SurfEvo    =  [];
 
-FE.Vel = zeros(FE.NQ2,2);
+FE.Vel        = zeros(FE.NQ2,2);  % initialise effective grid deformation velocity
 
 end
 

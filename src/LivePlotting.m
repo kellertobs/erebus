@@ -1,4 +1,4 @@
-% LivePlotting    EDIFICE: Plot model results live during run
+% LivePlotting    EREBUS subroutine to plot model results live during run
 %
 % []  =  LivePlotting(CTX)
 %
@@ -6,7 +6,8 @@
 %   properties live during model run. 
 %
 %   modified  20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  []  =  LivePlotting(CTX)
@@ -47,7 +48,7 @@ if strcmp(CTX.IO.LivePlot,'ON')
     title('Heat flux [MW]')
     subplot(3,1,3);
     plot(time,H.top.Fsp(:,2),'b',time,H.top.Fsp(:,3),'r'); axis tight;
-    axis([min(time),max(time)+1e-12,0,0.5])
+    axis([min(time),max(time)+1e-12,0,max(H.top.Fsp(:,3)).*1.1+1e-12])
     xlabel('Time [min]');
     title('Surface flow speed [m/s]')
     
@@ -128,8 +129,8 @@ if strcmp(CTX.IO.LivePlot,'ON')
     PlotField(log10(CTX.MP.YieldStr),CTX.FE,CTX.IO.PlotStyle);
     title('Yield Stress [log10 Pa]')
     subplot(sp22);
-    PlotField(log10(max(CTX.RHEO.Dmg0.*1e-3,CTX.MP.Dmg)),CTX.FE,CTX.IO.PlotStyle);
-    title('Damage strain [log10]')
+    PlotField(CTX.MP.TII - CTX.MP.YieldStr,CTX.FE,CTX.IO.PlotStyle);
+    title('Failure function (<=0)')
     drawnow
     
     figure(n); n=n+1; clf;

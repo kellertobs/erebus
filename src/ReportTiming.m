@@ -1,9 +1,10 @@
-% LivePlotting    EDIFICE: Report model timing each step
+% ReportTiming    EREBUS subroutine to report model timing at each time step
 %
 % []  =  ReportTiming(CTX)
 %
 %   modified  20170427  Tobias Keller
 %   modified  20200227   Tobias Keller
+
 
 function  []  =  ReportTiming(CTX)
 

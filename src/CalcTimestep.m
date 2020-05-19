@@ -1,5 +1,13 @@
-% Determine the allowed time step for advection, diffusion and free surface
-% [Time]  =  CalcTimestep(Time,VS,VF,Temp,Dens,Dim,El,No,MAP,BC)
+% CalcTimestep    EREBUS subroutine to limit discrete time step
+%
+% [CTX]  =  CalcTimestep(CTX)
+%
+%   Function limits time step according to Courant stability criterion and 
+%   additional surface stability criterion if free surface is enabled.
+%
+%   created   20161115  Tobias Keller
+%   modified  20170508  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 function  [CTX]   =  CalcTimestep(CTX)
 
@@ -20,7 +28,7 @@ W      =  th.*CTX.SL.W + (1-th).*CTX.SLo.W;
 
 %***  solid velocity advection  *******************************************
 
-advs_dt    =  CTX.SL.CFL .* min( min(h./2./abs(U(:)+1e-32)) , min(h./2./abs(W(:)+1e-32)) );
+advs_dt    =  CTX.SL.CFL * min( min(h./2./abs(U(:)+1e-32)) , min(h./2./abs(W(:)+1e-32)) );
 
 if advs_dt<=dt0; str = 'advs'; end
 dt         =  min(dt0,advs_dt);
@@ -40,8 +48,8 @@ end
 
 %***  limit timestep  *****************************************************
 
-CTX.TIME.step  =  min(dt0,dt);
-CTX.TIME.limit =  str;
+CTX.TIME.step   =  min(dt0,dt);
+CTX.TIME.limit  =  str;
 
 end
 

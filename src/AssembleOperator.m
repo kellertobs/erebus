@@ -1,17 +1,18 @@
-% AssembleOperator    EDIFICE: Construct coefficient matrix
+% AssembleOperator    EREBUS subroutine to assemble Stokes coefficient matrix
 %
-% [L,RHS]  =  AssembleOperator(MP,SL,CTX)
+% [L,R]  =  AssembleOperator(MP,SL,CTX)
 %
-%   Function constructs coefficient matrix L and right-hand side vector R
+%   Function assembles coefficient matrix L and right-hand side vector R
 %   for linear Stokes problem according to problem dimensions and shape 
 %   functions in FE, and material point properties in MP.
 %
 %   created 20161115 Tobias Keller
 %   modified  20170508  Tobias Keller
 %   modified  20200227   Tobias Keller
+%   modified  20200515   Tobias Keller
 
 
-function [L,RHS]  =  AssembleOperator(MP,SL,CTX)
+function [L,R]  =  AssembleOperator(MP,SL,CTX)
 
 FE  =  CTX.FE;
 
@@ -57,11 +58,11 @@ nblo     =  ceil(NEl/nelblo);
 
 %*****  allocate arrays  **************************************************
 
-VV_all    =  zeros(NEl,nv*nv);
-VP_all    =  zeros(NEl,nv*np);
-PP_all    =  zeros(NEl,np*np);
-RhsV_all  =  zeros(NEl,nv);
-RhsP_all  =  zeros(NEl,np);
+VV_all  =  zeros(NEl,nv*nv);
+VP_all  =  zeros(NEl,nv*np);
+PP_all  =  zeros(NEl,np*np);
+RV_all  =  zeros(NEl,nv);
+RP_all  =  zeros(NEl,np);
 
 
 %*****  block assembly loop  **********************************************
@@ -79,52 +80,52 @@ for ib = 1:nblo
     
     %*****  allocate arrays  **************************************
     
-    VV_block    =  zeros(nelblo,nv*nv);
-    VP_block    =  zeros(nelblo,nv*np);
-    PP_block    =  zeros(nelblo,np*np);
-    RhsV_block  =  zeros(nelblo,nv);
-    RhsP_block  =  zeros(nelblo,np);
-    invJx       =  zeros(nelblo,2);
-    invJz       =  zeros(nelblo,2);
+    VV_block  =  zeros(nelblo,nv*nv);
+    VP_block  =  zeros(nelblo,nv*np);
+    PP_block  =  zeros(nelblo,np*np);
+    RV_block  =  zeros(nelblo,nv);
+    RP_block  =  zeros(nelblo,np);
+    invJx     =  zeros(nelblo,2);
+    invJz     =  zeros(nelblo,2);
 
     
     %*****  integration loop  *************************************
     
     for ip=1:nip
         
-        NU            =  NiU(:,ip);
-        NP            =  NiP(:,ip);
-        dNdSU         =  dNdSiU(:,:,ip);
-        dNdSP         =  dNdSiP(:,:,ip);
+        NU          =  NiU(:,ip);
+        NP          =  NiP(:,ip);
+        dNdSU       =  dNdSiU(:,:,ip);
+        dNdSP       =  dNdSiP(:,:,ip);
         
-        Jx            =  COORDX*dNdSU';
-        Jz            =  COORDZ*dNdSU';
-        detJ          =  Jx(:,1).*Jz(:,2) - Jx(:,2).*Jz(:,1);
+        Jx          =  COORDX*dNdSU';
+        Jz          =  COORDZ*dNdSU';
+        detJ        =  Jx(:,1).*Jz(:,2) - Jx(:,2).*Jz(:,1);
         
-        invdetJ       =  1.0./detJ;
-        invJx(:,1)    =  +Jz(:,2).*invdetJ;
-        invJx(:,2)    =  -Jz(:,1).*invdetJ;
-        invJz(:,1)    =  -Jx(:,2).*invdetJ;
-        invJz(:,2)    =  +Jx(:,1).*invdetJ;
+        invdetJ     =  1.0./detJ;
+        invJx(:,1)  =  +Jz(:,2).*invdetJ;
+        invJx(:,2)  =  -Jz(:,1).*invdetJ;
+        invJz(:,1)  =  -Jx(:,2).*invdetJ;
+        invJz(:,2)  =  +Jx(:,1).*invdetJ;
         
-        dNdxU         =  invJx*dNdSU;
-        dNdzU         =  invJz*dNdSU;
+        dNdxU       =  invJx*dNdSU;
+        dNdzU       =  invJz*dNdSU;
         
-        dNdxP         =  invJx*dNdSP;
-        dNdzP         =  invJz*dNdSP;
+        dNdxP       =  invJx*dNdSP;
+        dNdzP       =  invJz*dNdSP;
         
-        NNU           =  ones(nelblo,1)*NU.';
-        NNP           =  ones(nelblo,1)*NP.';
-        W             =  Wi(ip).*detJ;
-        WU            =  W(:,ones(1,nu));
-        WP            =  W(:,ones(1,np));
+        NNU         =  ones(nelblo,1)*NU.';
+        NNP         =  ones(nelblo,1)*NP.';
+        W           =  Wi(ip).*detJ;
+        WU          =  W(:,ones(1,nu));
+        WP          =  W(:,ones(1,np));
         
         
         %*****  VV matrix  ****************************************
         
-        a0    =  2/3.*EtaVEP(ind,ip);
-        a1    = -1/3.*EtaVEP(ind,ip);
-        a2    =  1/2.*EtaVEP(ind,ip);
+        a0  =  2/3.*EtaVEP(ind,ip);
+        a1  = -1/3.*EtaVEP(ind,ip);
+        a2  =  1/2.*EtaVEP(ind,ip);
         
         indx  = 1;
         for i = 1:nu
@@ -159,19 +160,18 @@ for ib = 1:nblo
         
         %*****  RhsV vector  **************************************
         
-        RhsV_block(:,1:2:nv) = RhsV_block(:,1:2:nv) - (0.*(Rho(ind,ip)-SL.RhoRef)).*NNU.*WU;
-        RhsV_block(:,2:2:nv) = RhsV_block(:,2:2:nv) - (g.*(Rho(ind,ip)-SL.RhoRef)).*NNU.*WU;
+        RV_block(:,1:2:nv) = RV_block(:,1:2:nv) - (0.*(Rho(ind,ip)-SL.RhoRef)).*NNU.*WU;
+        RV_block(:,2:2:nv) = RV_block(:,2:2:nv) - (g.*(Rho(ind,ip)-SL.RhoRef)).*NNU.*WU;
         
         if strcmp(CTX.RHEO.Elasticity,'ON')
-            RhsV_block(:,1:2:nv) =  RhsV_block(:,1:2:nv) + (dNdxU.*ChiTxxo(ind,ip) + dNdzU.*ChiTxzo(ind,ip)).*WU;
-            RhsV_block(:,2:2:nv) =  RhsV_block(:,2:2:nv) + (dNdxU.*ChiTxzo(ind,ip) + dNdzU.*ChiTzzo(ind,ip)).*WU;
+            RV_block(:,1:2:nv) =  RV_block(:,1:2:nv) + (dNdxU.*ChiTxxo(ind,ip) + dNdzU.*ChiTxzo(ind,ip)).*WU;
+            RV_block(:,2:2:nv) =  RV_block(:,2:2:nv) + (dNdxU.*ChiTxzo(ind,ip) + dNdzU.*ChiTzzo(ind,ip)).*WU;
         end
         
         
         %*****  PP matrix / RhsP vector ************************
         
         stab  =  CTX.SL.StabFact.*FE.ElVol(ind)./EtaVEP(ind,ip);
-%         stab  =  CTX.SL.StabFact;
 
         indx   =  1;
         for i = 1:np
@@ -179,23 +179,22 @@ for ib = 1:nblo
                 PP_block(:,indx)  =  PP_block(:,indx) + (dNdxP(:,i).*dNdxP(:,j)  ...
                                                       +  dNdzP(:,i).*dNdzP(:,j)) ... 
                                                       .* stab .* W;
-%                 PP_block(:,indx)  =  PP_block(:,indx) + stab .* NNP .* WP;
                 indx = indx+1;
             end
         end
         
-        RhsP_block  =  RhsP_block + Src(ind,ip) .* NNP .* WP;
+        RP_block  =  RP_block + Src(ind,ip) .* NNP .* WP;
         
     end
     
     
     %*****  collect element matrices  *****************************
     
-    VV_all(ind,:)    =  VV_block;
-    VP_all(ind,:)    =  VP_block;
-    PP_all(ind,:)    =  PP_block;
-    RhsV_all(ind,:)  =  RhsV_block;
-    RhsP_all(ind,:)  =  RhsP_block;
+    VV_all(ind,:)  =  VV_block;
+    VP_all(ind,:)  =  VP_block;
+    PP_all(ind,:)  =  PP_block;
+    RV_all(ind,:)  =  RV_block;
+    RP_all(ind,:)  =  RP_block;
 
     
     %*****  adjust blocksize and arrays  **********************************
@@ -230,23 +229,23 @@ VP_j    =  el2p(:,indx_j(:));
 
 %*****  assemble global block matrices  ***********************************
 
-VV     =  sparse(VV_i(:),  VV_j(:),  VV_all(:));
-PP     =  sparse(PP_i(:),  PP_j(:),  PP_all(:));
-VP     =  sparse(VP_i(:),  VP_j(:),  VP_all(:));
-PV     =  VP.';
+VV    =  sparse(VV_i(:),  VV_j(:),  VV_all(:));
+PP    =  sparse(PP_i(:),  PP_j(:),  PP_all(:));
+VP    =  sparse(VP_i(:),  VP_j(:),  VP_all(:));
+PV    =  VP.';
 
 %*****  assemble RHS block vectors  ***************************************
 
-RhsV  =  accumarray(el2v(:), RhsV_all(:));
-RhsP  =  accumarray(el2p(:), RhsP_all(:));
+RV  =  accumarray(el2v(:), RV_all(:));
+RP  =  accumarray(el2p(:), RP_all(:));
 
 
 %***  assemble global operator  *******************************************
 
-L     =  [VV   VP ; ...
-          PV   PP ];
+L   =  [VV   VP ; ...
+        PV   PP ];
 
-RHS   =  [RhsV; RhsP];
+R   =  [RV; RP];
 
 
 end

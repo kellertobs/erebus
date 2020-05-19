@@ -1,11 +1,12 @@
-% LivePlotting    EDIFICE: Save model results to file
+% SaveToFile    EREBUS subroutine to save model output to file
 %
 % []  =  SaveToFile(CTX)
 %
 %   Function saves model solution and material point properties to file.
 %
 %   modified  20170427  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  []  =  SaveToFile(CTX)
@@ -14,8 +15,6 @@ function  []  =  SaveToFile(CTX)
 fprintf(1,'******************************************************\n')
 fprintf(1,'***************     save frame # %d     **************\n',CTX.IO.frame)
 fprintf(1,'******************************************************\n\n')
-
-if ~exist([CTX.IO.DataDir '/' CTX.IO.RunID],'dir'); mkdir([CTX.IO.DataDir '/' CTX.IO.RunID]); end
     
 CTX    = rmfield(CTX,'SLo');
 CTX    = rmfield(CTX,'MPo');

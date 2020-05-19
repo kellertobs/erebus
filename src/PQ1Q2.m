@@ -1,3 +1,13 @@
+% PQ1Q2    EREBUS subroutine to project field from Q1-nodes to Q2-nodes
+%
+% [Q2field]  =  PQ1Q2(Q1field,FE)
+%
+%   Function returns Q2field projected from input Q1field on Q1-nodes
+%   space to Q2-nodes space.
+%
+%   created   20161115  Tobias Keller
+%   modified  20170427  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function   Q2field  =  PQ1Q2(Q1field,FE)

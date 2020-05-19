@@ -1,35 +1,36 @@
-% calculate value of shape function and shape function derivatives at given
-% coordinates
+% ShapeFuncts    EREBUS subroutine to calculate shape functions
 %
-% [N,dNdS] = ShapeFuncts(S,type)
-% Input is an array S of dimensions (2,n), containing coordinates of points
-% (typically integration points or lagrangian particles), at which shape 
-% functions and derivatives will be calculated.
-% Function returns shape functions in array N (nodes_el,n), and shape
-% function derivatives in array dNdS (2,nodes_el,n)
-% linear or quadratic elements supported
+% [N,dNdS]  =  ShapeFuncts(S,type)
 %
-% sorting of nodes in element is
+%   Function returns shape functions in array N [nodes/elements,n], and shape
+%   function derivatives in array dNdS [2,nodes/elements,n] for choice of 
+%   piece-wise constant, linear, or quadratic elements. Input array S [2,n], 
+%   containing local coordinates of n points (typically integration points),  
+%   where functions and derivatives will be calculated.
 % 
-% type = P0:    .---.  
-%               | o | 1
-%               .---.  
+%
+% 	Numbering of nodes in an element is as follows:
+% 
+%   type = P0:    .---.  
+%                 | o | 1
+%                 .---.  
 %
 %
-% type = Q1:  1 o---o 3
-%               |   |
-%             2 o---o 4
+%   type = Q1:  1 o---o 3
+%                 |   |
+%               2 o---o 4
 %
-%                   4
-% type = Q2:  1 o---o---o 7
-%               |   |5  |
-%             2 o---o---o 8
-%               |   |   |
-%             3 o---o---o 9
-%                   6   
-
-% created  20140729 Tobias Keller
-% modified 20190418 Tobias Keller
+%                     4
+%   type = Q2:  1 o---o---o 7
+%                 |   |5  |
+%                 2 o---o---o 8
+%                 |   |   |
+%               3 o---o---o 9
+%                     6   
+%
+%   created   20140729  Tobias Keller
+%   modified  20190418  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function  [N,dNdS]  =  ShapeFuncts(S,type)

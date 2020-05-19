@@ -60,10 +60,6 @@ end
 
 %*****  interpolate strain rates on tracers  ******************************
 
-% Edot(:,1)     =  PQ1IP(PIPQ1(Edot(:,1),FE),FE) + 1e-32;
-% Edot(:,2)     =  PQ1IP(PIPQ1(Edot(:,2),FE),FE) + 1e-32;
-% Edot(:,3)     =  PQ1IP(PIPQ1(Edot(:,3),FE),FE) + 1e-32;
-
 MP.DivV       =  PQ1IP(PIPQ1(Edot(:,1) + Edot(:,2),FE),FE);
 MP.Edot(:,1)  =  Edot(:,1) - 1/3.*MP.DivV     + 1e-32;
 MP.Edot(:,2)  =  Edot(:,2) - 1/3.*MP.DivV     + 1e-32;

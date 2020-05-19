@@ -1,3 +1,13 @@
+% PQ2El    EREBUS subroutine to project field from Q2-nodes to elements
+%
+% [Elfield]  =  PQ2El(Q2field,FE)
+%
+%   Function returns Q2field projected from input Elfield on elements
+%   space to Q2-nodes space.
+%
+%   created   20161115  Tobias Keller
+%   modified  20170427  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
 function   Elfield  =  PQ2El(Q2field,FE)

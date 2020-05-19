@@ -1,16 +1,18 @@
-% ApplyBC    EDIFICE: Apply and extract boundary conditions
+% ApplyBC    EREBUS subroutine to apply and extract boundary conditions on
+%            the Stokes velocity-pressure problem
 %
-% [L,RHS,BC]  =  ApplyBC(L,RHS,X,BC,FE)
+% [L,R,BC]  =  ApplyBC(L,RHS,X,BC,FE)
 %
 %   Function applies boundary conditions to Stokes problem according to
 %   options specified in BC, and extracts them to reduce problem size.
 %
-%   created 20161115 Tobias Keller
+%   created   20161115  Tobias Keller
 %   modified  20170508  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
-function  [L,RHS,BC]  =  ApplyBC(L,RHS,X,CTX)
+function  [L,R,BC]  =  ApplyBC(L,R,X,CTX)
 
 FE = CTX.FE;
 BC = CTX.BC;
@@ -195,7 +197,7 @@ BC.val           =  bc_val(ind);
 BC.free          =  1:length(L(1,:));
 BC.free(BC.ind)  =  [];
 TMP              =  L(:,BC.ind);
-RHS              =  RHS - TMP*BC.val;
+R                =  R - TMP*BC.val;
 L                =  L(BC.free,BC.free);
 
 end
