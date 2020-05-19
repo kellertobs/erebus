@@ -1,6 +1,6 @@
-% LinearSolver    EDIFICE: Calculates solution to linear Stokes equations
+% StokesSolver    EREBUS subroutine to calculate solution to Stokes equations
 %
-% [CTX] = LinearSolver(MP,CTX)
+% [CTX] = StokesSolver(MP,CTX)
 %
 %   Function finds solution to linear governing equations. It operates
 %   according to options set in CTX.SL; it calls AssembleOperator() and
@@ -10,10 +10,11 @@
 %   created 20161115 Tobias Keller
 %   modified  20170427  Tobias Keller
 %   modified  20170508  Tobias Keller
-%   modified  20200227   Tobias Keller
+%   modified  20200227  Tobias Keller
+%   modified  20200515  Tobias Keller
 
 
-function  [CTX] = LinearSolver(CTX)
+function  [CTX] = StokesSolver(CTX)
 
 SL  =  CTX.SL;
 MP  =  CTX.MP;
