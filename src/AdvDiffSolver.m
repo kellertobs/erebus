@@ -346,11 +346,11 @@ else
 end
 
 if strcmp(bval{4},'zf')
-    fgh(jc,nx+3)  =  fgh(jc,nz+2);
-    fgh(jc,nx+4)  =  fgh(jc,nz+2);
+    fgh(jc,nx+3)  =  fgh(jc,nx+2);
+    fgh(jc,nx+4)  =  fgh(jc,nx+2);
 elseif strcmp(bval{4},'ct')
-    fgh(jc,nx+3)  =  2.*fgh(jc,nz+2) - fgh(jc,nz+1);
-    fgh(jc,nx+4)  =  2.*fgh(jc,nz+3) - fgh(jc,nz+2);
+    fgh(jc,nx+3)  =  2.*fgh(jc,nx+2) - fgh(jc,nx+1);
+    fgh(jc,nx+4)  =  2.*fgh(jc,nx+3) - fgh(jc,nx+2);
 else
     fgh(jc,nx+3)  =  bval{4};
     fgh(jc,nx+4)  =  bval{4};
