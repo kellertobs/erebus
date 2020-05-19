@@ -7,16 +7,16 @@
 
 CTX.IO.SrcDir        =  '../src';                % source directory
 CTX.IO.DataDir       =  '../out';                % output directory
-
+CTX.IO.TryContinue   =  0;                       % try to continue prev. run
 
 %*****  Solver options  ***************************************************
 
 CTX.SL.maxits        =  1;                       % max non-linear iterations
 CTX.SL.atol          =  1.e-9;                   % absolute convergence tolerance (precond. residual norm)
 CTX.SL.rtol          =  1.e-2;                   % relative convergence tolerance
-CTX.SL.Advection     =  'FRM';                   % advection method
-CTX.SL.CFL           =  0.25;
-CTX.SL.RFN           =  10;
+CTX.SL.Advection     =  'FRM';                  % advection method
+CTX.SL.CFL           =  0.25;                     % Courant number for coarse time step
+CTX.SL.RFN           =  10;                      % Factor for refined adv-diff time step
 
 CTX.SL.theta_it      =  1.0;                     % iterative relaxation parameter
 CTX.SL.theta_dt      =  0.5;                     % time-step weighting parameter (0.5 = Cranck-Nicolson; 0 = Forward Euler; 1 = Backward Euler)
@@ -44,8 +44,8 @@ CTX.FE.LagrMesh      =  'SRF';                   % switch for Lagrangian mesh (O
 
 CTX.TIME.spyr        =  3600*24*365.25;          % seconds per year
 
-CTX.TIME.step        =  0.01;          % time step size [s]
-CTX.TIME.end         =  2*3600;     % stopping time for simulation run [s]
+CTX.TIME.step        =  0.01;                    % initial time step size [s]
+CTX.TIME.end         =  2*3600;                  % stopping time for simulation run [s]
 
 
 %*****  I/O and live plotting options  ************************************
@@ -60,79 +60,60 @@ CTX.IO.PlotStyle     = 'srf';                    % 'img' = image(), 'srf' = surf
 
 CTX.PHYS.grav        =  9.81;                    % gravity [m/s2]
 CTX.PHYS.RConst      =  8.314;                   % universal gas constant [J/K/mol]
-CTX.PHYS.TauPhi      =  1.5*60;                    %
-CTX.PHYS.TauTmp      =  3*3600;                  %
-CTX.PHYS.delta       =  1;    
-CTX.PHYS.InflowRate  =  0.025;
-CTX.PHYS.InflowPeriod = 1e32;
-
-%*****  set initial conditions for topography  ****************************
-
-CTX.INIT.TopoMode    =  'peak';                  % initial topography mode 'flat', 'peak', 'slope'
-CTX.INIT.TopoHeight  =  0e3;                   % set height for initial topography
-CTX.INIT.TopoWidth   =  1e3;                   % set width for initial topography
-CTX.INIT.TopoXLoc    =  CTX.FE.W/2;                % set x-location for initial topography
+CTX.PHYS.TauPhi      =  1.5*60;                  % surface outgassing time scale [s]
+CTX.PHYS.TauTmp      =  3*3600;                  % surface cooling time scale [s]
+CTX.PHYS.delta       =  1;                       % surface outgassing/cooling layer depth [m]
+CTX.PHYS.InflowRate  =  0.025;                   % bubbly magma inflow speed [m/s]
+CTX.PHYS.InflowPeriod = 1e32;                    % bubbly magma inflow period [s] (set very high for constant inflow)
 
 
 %*****  set initial condition for temperature field  **********************
-CTX.INIT.TempMode    = 'lavalake';
-CTX.INIT.TempInt     = 1000;
-CTX.INIT.TempExt     = 100;
+CTX.INIT.TempMode    = 'lavalake';               % temperature initiation mode
+CTX.INIT.TempInt     = 1000;                     % lake interior temperature
+CTX.INIT.TempExt     = 100;                      % lake exterior temperature
 
 
 %*****  initial conditions for material types  ****************************
 
-CTX.INIT.MatMode       =  'lavalake';            % initial materials mode ('layer','const')
-CTX.INIT.Mat           =  [1,2];                 % material types for layers
-CTX.INIT.MatLayers     =  2;                     % number of layers
-CTX.INIT.MatHeight     =  CTX.FE.D/2;
-CTX.INIT.MatWidth      =  8;
-CTX.INIT.MatXLoc       =  CTX.FE.W/2;
-CTX.INIT.MatZLoc       =  CTX.FE.D/2;
+CTX.INIT.MatMode       =  'lavalake';            % materials initiation mode
+CTX.INIT.Mat           =  [1,2];                 % material types for lake geometry
+CTX.INIT.MatHeight     =  CTX.FE.D/2;            % lake depth
+CTX.INIT.MatWidth      =  8;                     % conduit width
+CTX.INIT.MatXLoc       =  CTX.FE.W/2;            % horizontal position of conduit mouth
+CTX.INIT.MatZLoc       =  CTX.FE.D/2;            % vertical position of base of lake
 
-CTX.INIT.AddBlock      =  1;                     % add block of material
-CTX.INIT.BlockWidth    =  [CTX.INIT.MatWidth/2*0.75];
-CTX.INIT.BlockHeight   =  [CTX.FE.D/2];
-CTX.INIT.BlockZLoc     =  [30];
-CTX.INIT.BlockXLoc     =  [CTX.FE.W/2];
-CTX.INIT.BlockMat      =  [3];
-
-CTX.INIT.AddSphere     =  1;                     % add sphere/ellipse of material
-CTX.INIT.SphereRadiusX =  [CTX.INIT.MatWidth/4*0.75];
-CTX.INIT.SphereRadiusZ =  [CTX.INIT.MatWidth/4*0.75];
-CTX.INIT.SphereZLoc    =  [CTX.FE.D/2];
-CTX.INIT.SphereXLoc    =  [CTX.FE.W/2+1/4];
-CTX.INIT.SphereMat     =  [3];
+CTX.INIT.AddBlock      =  0;                     % add block of material
+CTX.INIT.AddSphere     =  0;                     % add sphere/ellipse of material
 
 
 %*****  Options for initial random perturbations  *************************
 
-CTX.INIT.PertSmooth     =  10;                   % set smoothness of random noise
+CTX.INIT.PertSmooth     =  round(25/(CTX.FE.nz/CTX.FE.D)^2);  % smoothing of random noise
 CTX.INIT.PertSymmetric  =  'OFF';                % switch to symmetric noise distribution
-CTX.INIT.PertFrict      =  0.05;                 % amplitude of friction angle perturbation
+CTX.INIT.PertFrict      =  0;                    % amplitude of friction angle perturbation
 CTX.INIT.PertCoh        =  0;                    % amplitude of cohesion perturbation
 
 
 %*****  Set material properties of material types  ************************
 
-CTX.PROP.n      =  [      1;       2;       3;       4];  % material ID numbers
-CTX.PROP.Eta    =  [  1.e+4;   1.e+4;   1.e+4;   1.e+4];  % material viscosities [Pas]
-CTX.PROP.G      =  [  1.e+9;   1.e+9;   1.e+9;   1.e+9];  % material shear moduli [Pa]
-CTX.PROP.Coh    =  [  1.e+4;   1.e+4;   1.e+4;   1.e+4];  % material cohesions [Pa]
-CTX.PROP.Frict  =  [    0.5;     0.5;     0.5;     0.5];  % material friction coefficient [1]
+CTX.PROP.n      =  [      1;       2;       3];  % material ID numbers
+CTX.PROP.Eta    =  [  1.e+4;   1.e+4;   1.e+4];  % material viscosity [Pas]
+CTX.PROP.G      =  [  1.e+9;   1.e+9;   1.e+9];  % material shear modulus [Pa]
+CTX.PROP.Coh    =  [  1.e+4;   1.e+4;   1.e+4];  % material cohesion [Pa]
+CTX.PROP.Frict  =  [    0.5;     0.5;     0.5];  % material friction coefficient [1]
 
-CTX.PROP.k      =  5;     % thermal conductivity [W/m/K]
-CTX.PROP.c      =  1200;  % heat capacity [J/kg/K]
-CTX.PROP.alpha  =  1e-4;  % thermal expansivity [J/kg/K]
-CTX.PROP.L      =  400e3; % latent heat of melting [J/kg]
-CTX.PROP.Tsol   =  800;   % solidus temperature [deg C]
-CTX.PROP.Tliq   =  1100;  % liquidus temperature [deg C]
+CTX.PROP.k      =  5;                            % thermal conductivity [W/m/K]
+CTX.PROP.c      =  1200;                         % heat capacity [J/kg/K]
+CTX.PROP.alpha  =  1e-4;                         % thermal expansivity [J/kg/K]
+CTX.PROP.L      =  400e3;                        % latent heat of melting [J/kg]
+CTX.PROP.Tsol   =  800;                          % solidus temperature [deg C]
+CTX.PROP.Tliq   =  1100;                         % liquidus temperature [deg C]
 
-CTX.PROP.Phi0   =  0.10;   % initial vesicularity [vol]
-CTX.PROP.kPhi   =  1e-5;   % bubble diffusivity [m2/s]
-CTX.PROP.Rho    =  2400;   % melt density [kg/m3]
-CTX.PROP.RhoChi =  2600;   % crystal density
-CTX.PROP.MPhi   =  0.025;  % gas molar mass [kg/mol]
+CTX.PROP.Phi0   =  0.10;                         % initial vesicularity [vol]
+CTX.PROP.kPhi   =  1e-5;                         % bubble diffusivity [m2/s]
+CTX.PROP.Rho    =  2400;                         % melt density [kg/m3]
+CTX.PROP.RhoChi =  2600;                         % crystal density
+CTX.PROP.MPhi   =  0.025;                        % gas molar mass [kg/mol]
 
 
 %*****  Options for visco-elastic/brittle-plastic rheology  ***************
@@ -142,21 +123,16 @@ CTX.RHEO.Plasticity      =  'ON';                % switch for plastic failure mo
 CTX.RHEO.Elasticity      =  'OFF';               % switch for elastic mode
 
 CTX.RHEO.Strainr0        =  5.e-3;               % reference strain rate [1/s]
-CTX.RHEO.PowerLawExp     =  3;
-
-CTX.RHEO.Dmg0            =  0.1;                 % reference damage strain [1]
-CTX.RHEO.DmgDFrict       =  1.0;                 % damage-reduction factor for friction angle [1]
-CTX.RHEO.DmgDCoh         =  1.0;                 % damage-reduction factor for cohesion [1]
-CTX.RHEO.DmgHealing      =  0e-15;               % damage healing rate [1/s]
+CTX.RHEO.PowerLawExp     =  3;                   % non-Newtonian powerlaw exponent
 
 CTX.RHEO.MaxEta          =  1.e+9;               % maximum cutoff viscosity [Pas]
 CTX.RHEO.MinEta          =  1.e+2;               % minimum cutoff viscosity [Pas]
 CTX.RHEO.MinGdt          =  1.e+2;               % minimum cutoff elastic strength [Pas]
 
 CTX.RHEO.mChi            = 2;                    % crystal stiffening exponent
-CTX.RHEO.Chic            = 0.45;                 % crystal close packing fraction
+CTX.RHEO.Chic            = 0.50;                 % crystal close packing fraction
 CTX.RHEO.mPhi            = -2;                   % bubble stiffening/softening exponent
-CTX.RHEO.Phic            = 0.55;                 % bubble close packing fraction
+CTX.RHEO.Phic            = 0.50;                 % bubble close packing fraction
 
 
 %***** Boundary conditions for velocity, pressure  ************************
