@@ -114,6 +114,7 @@ CTX.PROP.kPhi   =  1e-5;                         % bubble diffusivity [m2/s]
 CTX.PROP.Rho    =  2400;                         % melt density [kg/m3]
 CTX.PROP.RhoChi =  2600;                         % crystal density
 CTX.PROP.MPhi   =  0.025;                        % gas molar mass [kg/mol]
+CTX.PROP.Compr  =  1;                            % 1 for compressible, 0 for incompressible gas
 
 
 %*****  Options for visco-elastic/brittle-plastic rheology  ***************

@@ -32,7 +32,7 @@ if strcmp(CTX.RHEO.Elasticity,'ON')
     ChiTxzo  =  MP.Chi(FE.El2IP).*Txzo(FE.El2IP);
 end
 
-Src      =  PQ2IP(CTX.SL.GPhi./(1-CTX.SL.Phi),FE);
+Src      =  PQ2IP(CTX.SL.GPhi./(1-CTX.SL.Phi),FE) .* CTX.PROP.Compr;
 Src      =  Src(FE.El2IP);
 
 NiU      =  FE.NiU;

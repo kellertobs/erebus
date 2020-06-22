@@ -57,8 +57,8 @@ for n = 1:N
     kTmp     =  kTmp./RhoM./cL;  % thermal diffusivity
     
     % compressible term
-    Cmpr     = -(1-SL.Phi).*SL.Phi.*RhoM.*CTX.PHYS.grav./PQ1Q2(SL.Pt,FE).*SL.W;
-
+    Cmpr     = -(1-SL.Phi).*SL.Phi.*RhoM.*CTX.PHYS.grav./PQ1Q2(SL.Pt,FE).*SL.W .* CTX.PROP.Compr;
+    
     % adiabatic cooling term
     Adbt     =  1e-4.*(SL.T+273.15)./cL.*CTX.PHYS.grav.*SL.W;
     
