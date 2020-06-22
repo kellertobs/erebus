@@ -84,11 +84,11 @@ else
 end
 
 if strcmp(CTX.INIT.MatMode,'lavalake')
-    x                  =  (FE.CoordU(FE.MapUn(1,:),1)' - CTX.INIT.MatXLoc) ./ (0.8*CTX.INIT.MatWidth);
+    x                  =  (FE.CoordU(FE.MapUn(1,:),1)' - CTX.INIT.MatXLoc) ./ (0.9*CTX.INIT.MatWidth);
     ind                =  x >= -0.5 & x <= 0.5;
     inflow             =  (cos(x(ind).*4*pi)+cos(x(ind).*2*pi))./2 .* - CTX.PHYS.InflowRate;
     inflow             =  inflow - mean(inflow);
-    inflow             =  inflow .* (1+cos(CTX.TIME.total.*2*pi/CTX.PHYS.InflowPeriod))./2;
+    inflow             =  inflow .* max(0,-round(cos(CTX.TIME.total.*2*pi/CTX.PHYS.InflowPeriod)));
     BC.WTopBot(2,ind)  =  inflow + mean(BC.WTopBot(2,~ind));
     apply_botvz        =  1;
     apply_botvx        =  1;
