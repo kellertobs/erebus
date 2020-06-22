@@ -22,20 +22,20 @@ CTX.SL.theta_it      =  1.0;                     % iterative relaxation paramete
 CTX.SL.theta_dt      =  0.5;                     % time-step weighting parameter (0.5 = Cranck-Nicolson; 0 = Forward Euler; 1 = Backward Euler)
 
 CTX.SL.Smooth        =  0.25;                    % Smoothing factor to regularise viscosity
-CTX.SL.StabFact      =  1.e-24;                  % Stabilisation factor for P-coefficient matrix
+CTX.SL.StabFact      =  1.e-26;                  % Stabilisation factor for P-coefficient matrix
 CTX.SL.RhoRef        =  0;                       % reference density (= 0 for full P, != 0 for dynamic P)
 
 
 %*****  finite-element mesh and Lagrangian particles options  *************
 
 CTX.FE.ElType        = 'Q2Q1';                   % finite-element type (Q1P0, Q1Q1, Q2Q1)
-CTX.FE.nblock        =  12800;                   % block size for vectorised matrix assembly 
+CTX.FE.nblock        =  65536;                   % block size for vectorised matrix assembly 
 
 CTX.FE.nx            =  200;                     % number of elements in x-direction on FE mesh
-CTX.FE.nz            =  300;                     % number of elements in z-direction on FE mesh
+CTX.FE.nz            =   20;                     % number of elements in z-direction on FE mesh
 
-CTX.FE.D             =  100;                     % Depth of model domain [m]
-CTX.FE.W             =   10;                     % Width of model domain [m]
+CTX.FE.D             =  200;                     % Depth of model domain [m]
+CTX.FE.W             =   20;                     % Width of model domain [m]
 
 CTX.FE.LagrMesh      =  'SRF';                   % switch for Lagrangian mesh (ON/OFF), or Lagrangian free surface (SRF)
 
@@ -53,8 +53,7 @@ CTX.TIME.end         =  2*3600;                  % stopping time for simulation 
 CTX.IO.nwrite        =  10;                      % time steps between output frames
 CTX.IO.LivePlot      = 'ON';                     % switch ON for live output plotting
 CTX.IO.PlotStyle     = 'srf';                    % 'img' = image(), 'srf' = surface(), 
-                                                 % '..._lr' = reflected left,
-                                                 % '..._rr' = reflected right
+                                                 % '..._lr' = reflected left,                                              % '..._rr' = reflected right
 
 %*****  Physical parameters  **********************************************
 
@@ -65,6 +64,14 @@ CTX.PHYS.TauTmp      =  3*3600;                  % surface cooling time scale [s
 CTX.PHYS.delta       =  1;                       % surface outgassing/cooling layer depth [m]
 CTX.PHYS.InflowRate  =  0.025;                   % bubbly magma inflow speed [m/s]
 CTX.PHYS.InflowPeriod = 1e32;                    % bubbly magma inflow period [s] (set very high for constant inflow)
+
+
+%*****  set initial conditions for topography  ****************************
+
+CTX.INIT.TopoMode    =  'lake';                  % initial topography mode 'flat', 'peak', 'slope'
+CTX.INIT.TopoHeight  =  10;                      % set height for initial topography
+CTX.INIT.TopoWidth   =  20;                      % set width for initial topography
+CTX.INIT.TopoXLoc    =  CTX.FE.W;                % set x-location for initial topography
 
 
 %*****  set initial condition for temperature field  **********************
@@ -108,30 +115,31 @@ CTX.PROP.alpha  =  1e-4;                         % thermal expansivity [J/kg/K]
 CTX.PROP.L      =  400e3;                        % latent heat of melting [J/kg]
 CTX.PROP.Tsol   =  800;                          % solidus temperature [deg C]
 CTX.PROP.Tliq   =  1100;                         % liquidus temperature [deg C]
+CTX.PROP.CntAur =  20;                           % thickness of thermal contact aureole [m]
 
 CTX.PROP.Phi0   =  0.10;                         % initial vesicularity [vol]
 CTX.PROP.kPhi   =  1e-5;                         % bubble diffusivity [m2/s]
 CTX.PROP.Rho    =  2400;                         % melt density [kg/m3]
 CTX.PROP.RhoChi =  2600;                         % crystal density
-CTX.PROP.MPhi   =  0.025;                        % gas molar mass [kg/mol]
+CTX.PROP.MPhi   =  0.05;                         % gas molar mass [kg/mol]
 
 
 %*****  Options for visco-elastic/brittle-plastic rheology  ***************
 
 CTX.RHEO.ConstViscosity  =  'OFF';               % switch for constant viscosity mode
-CTX.RHEO.Plasticity      =  'ON';                % switch for plastic failure mode
+CTX.RHEO.Plasticity      =  'OFF';               % switch for plastic failure mode
 CTX.RHEO.Elasticity      =  'OFF';               % switch for elastic mode
 
 CTX.RHEO.Strainr0        =  5.e-3;               % reference strain rate [1/s]
-CTX.RHEO.PowerLawExp     =  3;                   % non-Newtonian powerlaw exponent
+CTX.RHEO.PowerLawExp     =  1;                   % non-Newtonian powerlaw exponent
 
 CTX.RHEO.MaxEta          =  1.e+9;               % maximum cutoff viscosity [Pas]
-CTX.RHEO.MinEta          =  1.e+2;               % minimum cutoff viscosity [Pas]
-CTX.RHEO.MinGdt          =  1.e+2;               % minimum cutoff elastic strength [Pas]
+CTX.RHEO.MinEta          =  1.e+3;               % minimum cutoff viscosity [Pas]
+CTX.RHEO.MinGdt          =  1.e+3;               % minimum cutoff elastic strength [Pas]
 
 CTX.RHEO.mChi            = 2;                    % crystal stiffening exponent
 CTX.RHEO.Chic            = 0.50;                 % crystal close packing fraction
-CTX.RHEO.mPhi            = -2;                   % bubble stiffening/softening exponent
+CTX.RHEO.mPhi            = -1;                   % bubble stiffening/softening exponent
 CTX.RHEO.Phic            = 0.50;                 % bubble close packing fraction
 
 

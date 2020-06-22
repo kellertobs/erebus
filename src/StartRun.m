@@ -72,6 +72,7 @@ else
     %*****  initialise finite element grid  *******************************
     
     CTX.FE  =  InitFE(CTX.FE);
+    CTX     =  InitTopo(CTX);
     CTX.FEo =  CTX.FE;
     
     
