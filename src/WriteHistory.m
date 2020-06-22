@@ -58,7 +58,7 @@ htop     =  diff(FE.CoordQ2(top,1));
 Abot     =  sum(hbot); % area of bot surface to normalize fluxes
 Atop     =  sum(htop); % area of bot surface to normalize fluxes
 Surf     =  repmat(FE.SurfQ2.',FE.nzQ2,1);
-W        = - (th.*SL.W + (1-th).*SLo.W);
+W        =  -(th.*SL.W + (1-th).*SLo.W);
 
 %***  record heat fluxes
 
