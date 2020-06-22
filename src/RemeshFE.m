@@ -17,8 +17,6 @@ function  [FE]  =  RemeshFE(FE)
 
 Xo  =  FE.CoordQ2;
 
-Xo(FE.MapQ2(1,2:end-1),2) = Xo(FE.MapQ2(1,2:end-1),2) + diff(Xo(FE.MapQ2(1,:),2),2)./8;
-
 
 %*****  Get regular reference mesh of appropriate dimensions  *************
 
@@ -56,6 +54,8 @@ end
 
 %***  top boundary
 Xo(FE.MapQ2(1      ,:),2)  =  spline(Xo(FE.MapQ2(1      ,:),1),Xo(FE.MapQ2(1      ,:),2),Coord(1      ,:,1));
+
+Xo(FE.MapQ2(1,:),2)  =  Xo(FE.MapQ2(1,:),2) + diff(Xo(FE.MapQ2(1,[1,1:end,end]),2),2)./8;  % apply regularisation
 
 %*** bottom boundary
 Xo(FE.MapQ2(FE.nzQ2,:),2)  =  spline(Xo(FE.MapQ2(FE.nzQ2,:),1),Xo(FE.MapQ2(FE.nzQ2,:),2),Coord(FE.nzQ2,:,1));
