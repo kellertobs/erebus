@@ -71,12 +71,15 @@ if strcmp(CTX.IO.LivePlot,'ON')
     drawnow
     
     figure(n); n=n+1; clf;
-    subplot(sp21);
+    subplot(sp31);
     PlotField(CTX.SL.Phi.*100,CTX.FE,CTX.IO.PlotStyle);
     title('Vesicularity [vol %]')
-    subplot(sp22);
-    PlotField(min(CTX.RHEO.Chic,CTX.SL.Chi).*100,CTX.FE,CTX.IO.PlotStyle);
+    subplot(sp32);
+    PlotField(CTX.SL.Chi.*100,CTX.FE,CTX.IO.PlotStyle);
     title('Crystallinity [vol %]')
+    subplot(sp33);
+    PlotField(CTX.SL.T,CTX.FE,CTX.IO.PlotStyle);
+    title('Temperature [C]')
     drawnow
     
     figure(n); n=n+1; clf;
@@ -129,7 +132,7 @@ if strcmp(CTX.IO.LivePlot,'ON')
     PlotField(log10(CTX.MP.YieldStr),CTX.FE,CTX.IO.PlotStyle);
     title('Yield Stress [log10 Pa]')
     subplot(sp22);
-    PlotField(CTX.MP.TII - CTX.MP.YieldStr,CTX.FE,CTX.IO.PlotStyle);
+    PlotField((CTX.MP.TII - CTX.MP.YieldStr)./CTX.MP.YieldStr,CTX.FE,CTX.IO.PlotStyle);
     title('Failure function (<=0)')
     drawnow
     
