@@ -68,9 +68,10 @@ SL.Pt     =  SL.P + SL.Pref;
 %***  idealised lava lake bed
 if strcmp(INIT.TempMode(1:4),'lava') % 'lavalake'
     
-    lake   =  PIPQ2(MP.Mat,FE);
-    SL.T   =  INIT.TempExt + (lake>=1.5).*(INIT.TempInt-INIT.TempExt);
-    SL.T   =  SmoothField(SL.T,1/8,round(20/CTX.FE.hzQ1^2),FE,'Q2');
+    redge  =  max(INIT.MatXLoc + INIT.MatWidth/2, (FE.W-PROP.CntAur/2) - (FE.W-PROP.CntAur/2-INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*FE.CoordQ2(:,2));
+    ledge  =  min(INIT.MatXLoc - INIT.MatWidth/2, (     PROP.CntAur/2) + (    -PROP.CntAur/2+INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*FE.CoordQ2(:,2));
+    SL.T   =  INIT.TempInt + ( max(0,(FE.CoordQ2(:,1)-redge)./PROP.CntAur) + max(0,(ledge-FE.CoordQ2(:,1))./PROP.CntAur) ).*(INIT.TempExt-INIT.TempInt);  %INIT.TempExt + (lake>=1.5).*(INIT.TempInt-INIT.TempExt);
+    SL.T   =  SmoothField(SL.T,1/8,round(25/CTX.FE.hzQ1^2),FE,'Q2');
 
 end
 
@@ -78,8 +79,8 @@ BC.botTmp  =  SL.T(FE.MapQ2(end,:));
 
 %*****  initialise bubble and crystal fractions  **************************
 Phi0    =  [0;0;PROP.Phi0];
-bubble  =  SmoothField(PIPQ2(Phi0(MP.Mat),FE),1/8,round(20/CTX.FE.hzQ1^2),FE,'Q2'); 
-SL.Phi  =  bubble + PROP.Phi0.*PIPQ2((MP.pert+1)./2,FE).*(SL.T-INIT.TempExt)./(INIT.TempInt-INIT.TempExt).*(1-FE.CoordQ2(:,2)./FE.D);
+bubble  =  SmoothField(PIPQ2(Phi0(MP.Mat),FE),1/8,round(25/CTX.FE.hzQ1^2),FE,'Q2'); 
+SL.Phi  =  bubble + PROP.Phi0.*PIPQ2((MP.pert+1)./5,FE).*(SL.T-PROP.Tsol)./(PROP.Tliq-PROP.Tsol).*(1-FE.CoordQ2(:,2)./FE.D);
 SL.Phi  =  max(0,min(PROP.Phi0,SL.Phi));
 MP.Phi  =  max(0,min(PROP.Phi0,PQ2IP(SL.Phi,CTX.FE)));
 

@@ -70,8 +70,8 @@ elseif strcmp(INIT.MatMode(1:5),'multi')
 elseif strcmp(INIT.MatMode(1:4),'lava') % 'lavalake'
     
     MP.Mat(:)    =  INIT.Mat(1);
-    redge        =  max(INIT.MatXLoc + INIT.MatWidth/2, FE.W - (FE.W-INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*COORD(:,2));
-    ledge        =  min(INIT.MatXLoc - INIT.MatWidth/2, 0    + (INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*COORD(:,2));
+    redge  =  1 + max(INIT.MatXLoc + INIT.MatWidth/2, (FE.W-PROP.CntAur/2) - (FE.W-PROP.CntAur/2-INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*COORD(:,2));
+    ledge  = -1 + min(INIT.MatXLoc - INIT.MatWidth/2, (     PROP.CntAur/2) + (    -PROP.CntAur/2+INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*COORD(:,2));
     lake         =  COORD(:,1) >= ledge & COORD(:,1) <= redge;
     MP.Mat(lake) =  INIT.Mat(2);
     
