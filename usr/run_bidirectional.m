@@ -10,8 +10,8 @@ CTX.IO.TryContinue     =  1;
 CTX.IO.LivePlot        = 'ON';
 CTX.IO.nwrite          =  20;
 
-CTX.FE.nx              =  30/1;
-CTX.FE.nz              =  300/1;
+CTX.FE.nx              =  30/2;
+CTX.FE.nz              =  300/2;
 CTX.FE.ElType          =  'Q2Q1';        
 
 CTX.FE.W               =  20;    
