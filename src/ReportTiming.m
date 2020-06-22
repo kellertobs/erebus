@@ -10,12 +10,16 @@ function  []  =  ReportTiming(CTX)
 
 time = CTX.TIME.total;
 step = CTX.TIME.step;
-sphr = 3600;
-spdy = 3600*24;
-spyr = 3600*24*365.25;
+spmn = 60;
+sphr = 60*60;
+spdy = 60*60*24;
+spyr = 60*60*24*365.25;
 
-if time < 3600
+if time < spmn
     tunit = ' sec';
+elseif time >=  spmn && time < sphr
+    tunit = ' min';
+    time  = time/spmn;
 elseif time >=  sphr && time < spdy
     tunit = ' hr';
     time  = time/sphr;
@@ -33,8 +37,11 @@ else
     time  = time/1e6/spyr;
 end
 
-if step < 3600
+if step < spmn
     sunit = ' sec';
+elseif step >=  spmn && step < sphr
+    sunit = ' min';
+    step  = step/spmn;
 elseif step >=  sphr && step < spdy
     sunit = ' hr';
     step  = step/sphr;
