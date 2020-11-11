@@ -23,7 +23,7 @@ if CTX.IO.TryContinue == 1
         CTX.IO.ContID  =  CTX.IO.RunID;
     end
     
-    if isfield(CTX.IO,'ContFrame') && CTX.IO.RestartFrame > 0
+    if isfield(CTX.IO,'ContFrame') && CTX.IO.ContFrame > 0
         CTX.IO.ContName = [CTX.IO.DataDir '/' CTX.IO.ContID '/' CTX.IO.ContID '_' num2str(CTX.IO.ContFrame) '.mat'];
     else
         CTX.IO.ContName = [CTX.IO.DataDir '/' CTX.IO.ContID '/' CTX.IO.ContID '_cont.mat'];
@@ -105,7 +105,6 @@ else
     
     %*****  plot initial condition and save to file  **********************
     
-    WriteHistory(CTX);
     if strcmp(CTX.IO.LivePlot,'ON'); LivePlotting(CTX); end
     SaveToFile(CTX);
     CTX.IO.frame  =  1;
