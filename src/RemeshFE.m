@@ -53,9 +53,9 @@ end
 %*****  Interpolate deformed boundary topography on regularly spaced mesh
 
 %***  top boundary
-Xo(FE.MapQ2(1      ,:),2)  =  spline(Xo(FE.MapQ2(1      ,:),1),Xo(FE.MapQ2(1      ,:),2),Coord(1      ,:,1));
+Xo(FE.MapQ2(1      ,:),2)  =  interp1(Xo(FE.MapQ2(1      ,:),1),Xo(FE.MapQ2(1      ,:),2),Coord(1      ,:,1),'linear');
 
-Xo(FE.MapQ2(1,:),2)  =  Xo(FE.MapQ2(1,:),2) + diff(Xo(FE.MapQ2(1,[1,1:end,end]),2),2)./8;  % apply regularisation
+Xo(FE.MapQ2(1,:),2)  =  Xo(FE.MapQ2(1,:),2) + FE.kSE .* diff(Xo(FE.MapQ2(1,[1,1:end,end]),2),2)./FE.hxQ2^2 .* FE.dt;  % apply diffusive surface erosion
 
 %*** bottom boundary
 Xo(FE.MapQ2(FE.nzQ2,:),2)  =  spline(Xo(FE.MapQ2(FE.nzQ2,:),1),Xo(FE.MapQ2(FE.nzQ2,:),2),Coord(FE.nzQ2,:,1));
