@@ -19,7 +19,7 @@ function   [MP]  =  Density(MP,CTX)
 RhoPhiCompr  =  CTX.PROP.MPhi.*PQ1IP(CTX.SL.Pt,CTX.FE)./CTX.PHYS.RConst./(PQ2IP(CTX.SL.T,CTX.FE)+273.15);
 
 % incompressible gas density
-RhoPhiIncmp  =  CTX.PROP.MPhi.*max(CTX.SL.Pt)./CTX.PHYS.RConst./(max(CTX.SL.T)+273.15);
+RhoPhiIncmp  =  CTX.PROP.MPhi.*mean(CTX.SL.Pt)./CTX.PHYS.RConst./(max(CTX.SL.T)+273.15);
 RhoPhiIncmp  =  RhoPhiIncmp .* (1 - CTX.PROP.alpha.*(PQ2IP(CTX.SL.T,CTX.FE)-CTX.PROP.Tsol));
 
 % weighted compressible/incompressible gas density
