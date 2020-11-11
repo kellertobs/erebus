@@ -83,16 +83,24 @@ else
     apply_Pfix     =  1;
 end
 
-if strcmp(CTX.INIT.MatMode,'lavalake')
-    x                  =  (FE.CoordU(FE.MapUn(1,:),1)' - CTX.INIT.MatXLoc) ./ (0.9*CTX.INIT.MatWidth);
-    ind                =  x >= -0.5 & x <= 0.5;
-    inflow             =  (cos(x(ind).*4*pi)+cos(x(ind).*2*pi))./2 .* - CTX.PHYS.InflowRate;
-    inflow             =  inflow - mean(inflow);
-    inflow             =  inflow .* max(0,-round(cos(CTX.TIME.total.*2*pi/CTX.PHYS.InflowPeriod)));
-    BC.WTopBot(2,ind)  =  inflow + mean(BC.WTopBot(2,~ind));
-    apply_botvz        =  1;
-    apply_botvx        =  1;
-end
+% if strcmp(CTX.INIT.MatMode,'lavalake')
+%     x                  =  (FE.CoordU(FE.MapUn(1,:),1)' - CTX.INIT.MatXLoc) ./ (CTX.INIT.MatWidth);
+%     ind                =  x >= -0.5 & x <= 0.5;
+%     CTX.BC.SlugCount   =  floor((CTX.TIME.total+CTX.PHYS.TauIn/2) / (CTX.PHYS.SlugNo*CTX.PHYS.TauIn));
+%     if  CTX.TIME.total >= (CTX.BC.SlugCount*CTX.PHYS.SlugNo-0.5)*(CTX.PHYS.TauIn) && ...
+%         CTX.TIME.total <  (CTX.BC.SlugCount*CTX.PHYS.SlugNo+0.5)*(CTX.PHYS.TauIn)
+%         inflow         =  (cos(x(ind).*4*pi)+cos(x(ind).*2*pi))./2 .* - CTX.PHYS.WIn;
+%         inflow         =  inflow - mean(inflow);
+%         BC.SlugOn      =  1;
+%     else
+%         inflow = zeros(size(ind(ind)));
+%         BC.SlugOn      =  0;
+%     end
+%     % inflow             =  inflow .* max(0,-round(cos(CTX.TIME.total.*2*pi/CTX.PHYS.InflowPeriod)));
+%     BC.WTopBot(2,ind)  =  inflow + mean(BC.WTopBot(2,~ind));
+%     apply_botvz        =  1;
+%     apply_botvx        =  1;
+% end
 
 %*****  optimized extracted boundary conditions  **************************
 
