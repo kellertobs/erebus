@@ -43,7 +43,8 @@ FE                           =  UpdateFE(FE);
 
 %*****  Adjust interior of FE mesh to topography  *************************
 
-FE  =  RemeshFE(FE);
+FE.dt   =  CTX.TIME.step;
+FE      =  RemeshFE(FE);
 
 CTX.FE  =  FE;
 
