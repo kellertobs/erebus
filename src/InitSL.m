@@ -70,18 +70,20 @@ if strcmp(INIT.TempMode(1:4),'lava') % 'lavalake'
     
     redge  =  max(INIT.MatXLoc + INIT.MatWidth/2, (FE.W-PROP.CntAur/2) - (FE.W-PROP.CntAur/2-INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*FE.CoordQ2(:,2));
     ledge  =  min(INIT.MatXLoc - INIT.MatWidth/2, (     PROP.CntAur/2) + (    -PROP.CntAur/2+INIT.MatXLoc-INIT.MatWidth/2)./INIT.MatHeight.*FE.CoordQ2(:,2));
-    SL.T   =  INIT.TempInt + ( max(0,(FE.CoordQ2(:,1)-redge)./PROP.CntAur) + max(0,(ledge-FE.CoordQ2(:,1))./PROP.CntAur) ).*(INIT.TempExt-INIT.TempInt);  %INIT.TempExt + (lake>=1.5).*(INIT.TempInt-INIT.TempExt);
+    SL.T   =  INIT.TempInt + ( max(0,(FE.CoordQ2(:,1)-redge)./PROP.CntAur) + max(0,(ledge-FE.CoordQ2(:,1))./PROP.CntAur) ).*(INIT.TempExt-INIT.TempInt);
     SL.T   =  SmoothField(SL.T,1/8,round(25/CTX.FE.hzQ1^2),FE,'Q2');
-
 end
 
+BC.topTmp  =  SL.T(FE.MapQ2(1  ,:));
 BC.botTmp  =  SL.T(FE.MapQ2(end,:));
+BC.lftTmp  =  SL.T(FE.MapQ2(:,1  ));
+BC.rgtTmp  =  SL.T(FE.MapQ2(:,end));
 
 %*****  initialise bubble and crystal fractions  **************************
 Phi0    =  [0;0;PROP.Phi0];
 bubble  =  SmoothField(PIPQ2(Phi0(MP.Mat),FE),1/8,round(25/CTX.FE.hzQ1^2),FE,'Q2'); 
-SL.Phi  =  bubble + PROP.Phi0.*PIPQ2((MP.pert+1)./5,FE).*(SL.T-PROP.Tsol)./(PROP.Tliq-PROP.Tsol).*(1-FE.CoordQ2(:,2)./FE.D);
-SL.Phi  =  max(0,min(PROP.Phi0,SL.Phi));
+SL.Phi  =  bubble + INIT.PertPhi.*PIPQ2((MP.pert+1),FE).*(SL.T-PROP.Tsol)./(PROP.Tliq-PROP.Tsol);
+SL.Phi  =  max(0,min(PROP.Phi0,SL.Phi)) .* (1+PROP.Compr.*(FE.D-FE.CoordQ2(:,2))./FE.D);
 MP.Phi  =  max(0,min(PROP.Phi0,PQ2IP(SL.Phi,CTX.FE)));
 
 SL.GTmp    =  0.*SL.Phi;
@@ -91,6 +93,9 @@ BC.botPhi  =  SL.Phi(FE.MapQ2(end,:));
 SL.Chi  =  max(0,min(1,(SL.T-PROP.Tliq)./(PROP.Tsol-PROP.Tliq))).*(1-SL.Phi);
 MP.Chi  =  max(0,min(1,PQ2IP(SL.Chi,CTX.FE)));
 
+BC.SlugOn  = 1;
+BC.Tmp0    = SL.T;
+BC.Phi0    = SL.Phi;
 
 %*** hand back variables and structures
 SL.U  =  SL.U(:);
