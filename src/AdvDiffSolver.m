@@ -48,10 +48,10 @@ switch type
         xco  =  FEo.CoordEl(:,1);
         zco  =  FEo.CoordEl(:,2);
         if FE.NU == FE.NQ2
-            vel     =  PQ2El(vel,FE);
+            vel   =  PQ2El(vel,FE);
             velo  =  PQ2El(velo,FE);
         else
-            vel     =  PQ1El(vel,FE);
+            vel   =  PQ1El(vel,FE);
             velo  =  PQ1El(velo,FE);
         end
 
@@ -66,7 +66,7 @@ switch type
         xco  =  FEo.CoordQ1(:,1);
         zco  =  FEo.CoordQ1(:,2);
         if FE.NU == FE.NQ2
-            vel     =  PQ2Q1(vel,FE);
+            vel   =  PQ2Q1(vel,FE);
             velo  =  PQ2Q1(velo,FE);
         end
         
@@ -81,7 +81,7 @@ switch type
         xco  =  FEo.CoordQ2(:,1);
         zco  =  FEo.CoordQ2(:,2);
         if FE.NU == FE.NQ1
-            vel     =  PQ1Q2(vel,FE);
+            vel   =  PQ1Q2(vel,FE);
             velo  =  PQ1Q2(velo,FE);
         end
         
@@ -104,7 +104,7 @@ CT   =  {'ct','ct','ct','ct'};  % continuation boundaries
 
 for k = 1:ncomp
     
-    fieldk   =     field(:,k);
+    fieldk   =  field (:,k);
     fieldko  =  fieldo(:,k);
     
     xx       =  ghost_field(xc ,nx,nz,CT,map);
@@ -136,15 +136,15 @@ for k = 1:ncomp
         
     if strcmp(CTX.SL.Advection(1:3),'UPW')
         
-        um       =  min(u(jc,ic),0);
-        up       =  max(u(jc,ic),0);
-        wm       =  min(w(jc,ic),0);
-        wp       =  max(w(jc,ic),0);
+        um   =  min(u(jc,ic),0);
+        up   =  max(u(jc,ic),0);
+        wm   =  min(w(jc,ic),0);
+        wp   =  max(w(jc,ic),0);
         
-        umo      =  min(uo(jc,ic),0);
-        upo      =  max(uo(jc,ic),0);
-        wmo      =  min(wo(jc,ic),0);
-        wpo      =  max(wo(jc,ic),0);
+        umo  =  min(uo(jc,ic),0);
+        upo  =  max(uo(jc,ic),0);
+        wmo  =  min(wo(jc,ic),0);
+        wpo  =  max(wo(jc,ic),0);
         
         if strcmp(CTX.SL.Advection(4),'2')
             
@@ -252,17 +252,17 @@ for k = 1:ncomp
         
     elseif strcmp(CTX.SL.Advection(1:3),'FTV')
         
-        u      =  ghost_field(   vel(:,1),nx,nz,ZF,map);
-        w      =  ghost_field(   vel(:,2),nx,nz,ZF,map);
+        u    =  ghost_field(   vel(:,1),nx,nz,ZF,map);
+        w    =  ghost_field(   vel(:,2),nx,nz,ZF,map);
         
-        uo     =  ghost_field(velo(:,1),nx,nz,ZF,map);
-        wo     =  ghost_field(velo(:,2),nx,nz,ZF,map);
+        uo   =  ghost_field(velo(:,1),nx,nz,ZF,map);
+        wo   =  ghost_field(velo(:,2),nx,nz,ZF,map);
         
-        wp     =  (w(jp,ic)+w(jc,ic))./2;  zp = (zz(jp,ic)+zz(jc,ic))./2;
-        wm     =  (w(jm,ic)+w(jc,ic))./2;  zm = (zz(jm,ic)+zz(jc,ic))./2;
-        up     =  (u(jc,ip)+u(jc,ic))./2;  xp = (xx(jc,ip)+xx(jc,ic))./2;
-        um     =  (u(jc,im)+u(jc,ic))./2;  xm = (xx(jc,im)+xx(jc,ic))./2;
-        divv   =  (wp-wm)./(zp-zm) + (up-um)./(xp-xm);
+        wp   =  (w(jp,ic)+w(jc,ic))./2;  zp = (zz(jp,ic)+zz(jc,ic))./2;
+        wm   =  (w(jm,ic)+w(jc,ic))./2;  zm = (zz(jm,ic)+zz(jc,ic))./2;
+        up   =  (u(jc,ip)+u(jc,ic))./2;  xp = (xx(jc,ip)+xx(jc,ic))./2;
+        um   =  (u(jc,im)+u(jc,ic))./2;  xm = (xx(jc,im)+xx(jc,ic))./2;
+        divv =  (wp-wm)./(zp-zm) + (up-um)./(xp-xm);
         
         acc  =  a(jc,ic);
         ajp  =  a(jp,ic);
@@ -274,30 +274,29 @@ for k = 1:ncomp
               + ((acc+ajp)./2.*wp - (acc+ajm)./2.*wm)./(zp-zm);
         adv  =  adv - acc.*divv;
              
-        wp     =  (wo(jp,ic)+wo(jc,ic))./2;  zp = (zzo(jp,ic)+zzo(jc,ic))./2;
-        wm     =  (wo(jm,ic)+wo(jc,ic))./2;  zm = (zzo(jm,ic)+zzo(jc,ic))./2;
-        up     =  (uo(jc,ip)+uo(jc,ic))./2;  xp = (xxo(jc,ip)+xxo(jc,ic))./2;
-        um     =  (uo(jc,im)+uo(jc,ic))./2;  xm = (xxo(jc,im)+xxo(jc,ic))./2;
-        divv   =  (wp-wm)./(zp-zm) + (up-um)./(xp-xm);
+        wp   =  (wo(jp,ic)+wo(jc,ic))./2;  zp = (zzo(jp,ic)+zzo(jc,ic))./2;
+        wm   =  (wo(jm,ic)+wo(jc,ic))./2;  zm = (zzo(jm,ic)+zzo(jc,ic))./2;
+        up   =  (uo(jc,ip)+uo(jc,ic))./2;  xp = (xxo(jc,ip)+xxo(jc,ic))./2;
+        um   =  (uo(jc,im)+uo(jc,ic))./2;  xm = (xxo(jc,im)+xxo(jc,ic))./2;
+        divv =  (wp-wm)./(zp-zm) + (up-um)./(xp-xm);
         
-        acc = ao(jc,ic);
-        ajp = ao(jp,ic);
-        ajm = ao(jm,ic);
-        aip = ao(jc,ip);
-        aim = ao(jc,im);
+        acc  =  ao(jc,ic);
+        ajp  =  ao(jp,ic);
+        ajm  =  ao(jm,ic);
+        aip  =  ao(jc,ip);
+        aim  =  ao(jc,im);
         
         advo =  ((acc+aip)./2.*up - (acc+aim)./2.*um)./(xp-xm) ...
               + ((acc+ajp)./2.*wp - (acc+ajm)./2.*wm)./(zp-zm);
         advo =  advo - acc.*divv;
 
     else
-        adv  = 0;
-        advo = 0;
+        adv  =  0;
+        advo =  0;
     end
 
-    fieldk(map) =  fieldko(map) - ((adv+advo)./2 - kappa(map).*(lapl+laplo)./2) .* dt;
-    fieldk      =  fieldk       +  (src+srco)./2 .* dt;
-    field(:,k)  =  fieldk;
+    fieldk(map)  =  fieldko(map) + (-(adv+advo)./2 + kappa(map).*(lapl+laplo)./2 + (src(map)+srco(map))./2) .* dt;
+    field(:,k)   =  fieldk;
     
 end
    
