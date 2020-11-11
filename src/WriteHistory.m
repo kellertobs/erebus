@@ -18,7 +18,6 @@ function  []  =  WriteHistory(CTX)
 
 FE     =  CTX.FE;
 SL     =  CTX.SL;
-SLo    =  CTX.SLo;
 MP     =  CTX.MP;
 PROP   =  CTX.PROP;
 
@@ -41,42 +40,57 @@ H.step(n) =  CTX.TIME.step;
 vol      =  PElQ2(FE.ElVol./4,FE);
 map      =  FE.MapQ2;
 mapIP    =  FE.MapIP;
-th       =  SL.theta_dt;
 RhoM     =  PIPQ2(MP.Rho,FE);
 RhoPhi   =  PIPQ2(MP.RhoPhi,FE);
-Cp       =  CTX.PROP.c;
+CL       =  CTX.PROP.c + (1-SL.Phi).*PROP.L./(PROP.Tliq-PROP.Tsol);  % adjusted heat capacity
+CL(SL.T < PROP.Tsol)  =  CTX.PROP.c;
 Tc       =  CTX.RHEO.Chic .* (PROP.Tsol - PROP.Tliq) + PROP.Tliq;
 lake     =  SL.T > Tc;
 lakeIP   =  logical(PQ2IP(lake,FE));
 bot      =  map(end,:);
 top      =  map(1  ,:);
-T        =  th.*SL.T + (1-th).*SLo.T;
-T0       =  mean(CTX.INIT.TempExt);
-Phi      =  th.*SL.Phi + (1-th).*SLo.Phi;
+T        =  SL.T;
+Tbot     =  CTX.BC.botTmp;
+T0       =  CTX.INIT.TempExt;
+Phi      =  SL.Phi;
+Phibot   =  CTX.BC.botPhi;
 hbot     =  diff(FE.CoordQ2(bot,1));
 htop     =  diff(FE.CoordQ2(top,1));
 Abot     =  sum(hbot); % area of bot surface to normalize fluxes
 Atop     =  sum(htop); % area of bot surface to normalize fluxes
 Surf     =  repmat(FE.SurfQ2.',FE.nzQ2,1);
-W        =  -(th.*SL.W + (1-th).*SLo.W);
+W        =  -SL.W;
+Z        =  FE.CoordQ2(:,2)-Surf(:);
+vol      =  (vol(map(1:end-1,1:end-1))+vol(map(2:end,1:end-1))+vol(map(1:end-1,2:end))+vol(map(2:end,2:end)))./4;
 
 %***  record heat fluxes
 
 % heat flux into bottom of domain [W/m2], positive for heat addition
-H.bot.HeatIn(n)  =  sum((RhoM(bot(1:end-1)).*Cp.*T(bot(1:end-1)).*W(bot(1:end-1)) ...
-                       + RhoM(bot(2:end  )).*Cp.*T(bot(2:end  )).*W(bot(2:end  )))./2 .* hbot) / Abot;
+H.bot.HeatIn (n)  =  sum(sum((RhoM(map(1:end-1,1:end-1)).*CL(map(1:end-1,1:end-1)).*SL.HeatIn (map(1:end-1,1:end-1)) ...
+                          +   RhoM(map(2:end  ,1:end-1)).*CL(map(2:end  ,1:end-1)).*SL.HeatIn (map(2:end  ,1:end-1)) ...
+                          +   RhoM(map(1:end-1,2:end  )).*CL(map(1:end-1,2:end  )).*SL.HeatIn (map(1:end-1,2:end  )) ...
+                          +   RhoM(map(2:end  ,2:end  )).*CL(map(2:end  ,2:end  )).*SL.HeatIn (map(2:end  ,2:end  )))./4 .* vol)) / Abot;
 
 % heat flux out of top of domain [W/m2], positive for heat loss
-H.top.HeatOut(n) =  sum(RhoM.*Cp.*(T-T0)./CTX.PHYS.TauTmp.*exp(-(FE.CoordQ2(:,2)-Surf(:))./CTX.PHYS.delta).*vol) / Atop;
-
+H.top.HeatOut(n)  = -sum(sum((RhoM(map(1:end-1,1:end-1)).*CL(map(1:end-1,1:end-1)).*SL.HeatOut(map(1:end-1,1:end-1)) ...
+                          +   RhoM(map(2:end  ,1:end-1)).*CL(map(2:end  ,1:end-1)).*SL.HeatOut(map(2:end  ,1:end-1)) ...
+                          +   RhoM(map(1:end-1,2:end  )).*CL(map(1:end-1,2:end  )).*SL.HeatOut(map(1:end-1,2:end  )) ...
+                          +   RhoM(map(2:end  ,2:end  )).*CL(map(2:end  ,2:end  )).*SL.HeatOut(map(2:end  ,2:end  )))./4 .* vol)) / Atop;
+                     
+                     
 %***  record gas fluxes
 
 % gas mass flux into bottom of domain [W/m2], positive for gas addition
-H.bot.GasIn(n)   =  sum((RhoPhi(bot(1:end-1)).*Phi(bot(1:end-1)).*W(bot(1:end-1)) ...
-                       + RhoPhi(bot(2:end  )).*Phi(bot(2:end  )).*W(bot(2:end  )))./2 .*hbot) / Abot;
+H.bot.GasIn (n)  =  sum(sum((RhoPhi(map(1:end-1,1:end-1)).*SL.GasIn(map(1:end-1,1:end-1)) ...
+                         +   RhoPhi(map(2:end  ,1:end-1)).*SL.GasIn(map(2:end  ,1:end-1)) ...
+                         +   RhoPhi(map(1:end-1,2:end  )).*SL.GasIn(map(1:end-1,2:end  )) ...
+                         +   RhoPhi(map(2:end  ,2:end  )).*SL.GasIn(map(2:end  ,2:end  )))./4 .* vol)) / Abot;
                    
 % gas mass flux out of top of domain [W/m2], positive for gas loss
-H.top.GasOut(n)  =  sum(RhoPhi.*Phi./CTX.PHYS.TauPhi.*exp(-(FE.CoordQ2(:,2)-Surf(:))./CTX.PHYS.delta).*vol) / Atop;
+H.top.GasOut(n)  = -sum(sum((RhoPhi(map(1:end-1,1:end-1)).*SL.GasOut(map(1:end-1,1:end-1)) ...
+                         +   RhoPhi(map(2:end  ,1:end-1)).*SL.GasOut(map(2:end  ,1:end-1)) ...
+                         +   RhoPhi(map(1:end-1,2:end  )).*SL.GasOut(map(1:end-1,2:end  )) ...
+                         +   RhoPhi(map(2:end  ,2:end  )).*SL.GasOut(map(2:end  ,2:end  )))./4 .* vol)) / Atop;
 
 
 %***  record flow speed diagnostics
