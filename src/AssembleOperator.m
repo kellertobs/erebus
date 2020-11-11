@@ -32,8 +32,11 @@ if strcmp(CTX.RHEO.Elasticity,'ON')
     ChiTxzo  =  MP.Chi(FE.El2IP).*Txzo(FE.El2IP);
 end
 
-Src      =  PQ2IP(CTX.SL.GPhi./(1-CTX.SL.Phi),FE) .* CTX.PROP.Compr;
+Src      =  PQ2IP(CTX.SL.GPhi./max(0.01,1-CTX.SL.Phi),FE);
 Src      =  Src(FE.El2IP);
+
+W        =  PQ2IP(SL.W,FE);
+WallStr  =  0.*MP.EtaVP(FE.El2IP).*W(FE.El2IP)./(CTX.INIT.MatWidth/2).^2;
 
 NiU      =  FE.NiU;
 NiP      =  FE.NiP;
@@ -168,6 +171,7 @@ for ib = 1:nblo
             RV_block(:,2:2:nv) =  RV_block(:,2:2:nv) + (dNdxU.*ChiTxzo(ind,ip) + dNdzU.*ChiTzzo(ind,ip)).*WU;
         end
         
+        RV_block(:,2:2:nv)  =  RV_block(:,2:2:nv) + WallStr(ind,ip) .* NNU .* WU;
         
         %*****  PP matrix / RhsP vector ************************
         
