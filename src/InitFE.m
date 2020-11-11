@@ -47,7 +47,7 @@ FE.IPpEl   =  9;
 [FE.NiP0,FE.dNdSiP0]  =  ShapeFuncts(FE.Si,'P0');
 [FE.NiQ1,FE.dNdSiQ1]  =  ShapeFuncts(FE.Si,'Q1');
 [FE.NiQ2,FE.dNdSiQ2]  =  ShapeFuncts(FE.Si,'Q2');
-
+[FE.NiQ2,FE.dNdSiQ2]  =  ShapeFuncts(FE.Si,'Q2');
 
 %*****  Initialize DoFs on specified element type  ************************
 
