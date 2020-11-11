@@ -35,6 +35,7 @@ FE.CoordQ2(:,1)  =  FEo.CoordQ2(:,1) + U .* CTX.TIME.step;
 FE.CoordQ2(:,2)  =  FEo.CoordQ2(:,2) + W .* CTX.TIME.step;
 
 if strcmp(CTX.FE.LagrMesh,'SRF')  % only advect near-surface mesh
+    FE.dt = CTX.TIME.step;
     FE  =  RemeshFE(FE);  % ensure regular lateral spacing of surface nodes
     U   = (FE.CoordQ2(:,1)-FEo.CoordQ2(:,1))./CTX.TIME.step;
     W   = (FE.CoordQ2(:,2)-FEo.CoordQ2(:,2))./CTX.TIME.step;
