@@ -38,13 +38,13 @@ CTX.FE.D             =  200;                     % Depth of model domain [m]
 CTX.FE.W             =   20;                     % Width of model domain [m]
 
 CTX.FE.LagrMesh      =  'SRF';                   % switch for Lagrangian mesh (ON/OFF), or Lagrangian free surface (SRF)
-
+CTX.FE.kSE           =  0.05;                    % diffusivity of surface erosion
 
 %*****  Time stepping options  ********************************************
 
 CTX.TIME.spyr        =  3600*24*365.25;          % seconds per year
 
-CTX.TIME.step        =  0.01;                    % initial time step size [s]
+CTX.TIME.step        =  0.001;                   % initial time step size [s]
 CTX.TIME.end         =  2*3600;                  % stopping time for simulation run [s]
 
 
@@ -59,19 +59,22 @@ CTX.IO.PlotStyle     = 'srf';                    % 'img' = image(), 'srf' = surf
 
 CTX.PHYS.grav        =  9.81;                    % gravity [m/s2]
 CTX.PHYS.RConst      =  8.314;                   % universal gas constant [J/K/mol]
-CTX.PHYS.TauPhi      =  1.5*60;                  % surface outgassing time scale [s]
-CTX.PHYS.TauTmp      =  3*3600;                  % surface cooling time scale [s]
+CTX.PHYS.TauPhi      =  1*60;                    % surface outgassing time scale [s]
+CTX.PHYS.TauTmp      =  2*3600;                  % surface cooling time scale [s]
 CTX.PHYS.delta       =  1;                       % surface outgassing/cooling layer depth [m]
-CTX.PHYS.InflowRate  =  0.025;                   % bubbly magma inflow speed [m/s]
-CTX.PHYS.InflowPeriod = 1e32;                    % bubbly magma inflow period [s] (set very high for constant inflow)
+CTX.PHYS.SlugNo      =  1;                       % > 1 (int) for slugs, == 1 for bidirectional
+CTX.PROP.Phi0        =  0.10.*CTX.PHYS.SlugNo;   % initial vesicularity [vol]
+CTX.PHYS.WIn         =  0.05.*CTX.PHYS.SlugNo;   % bubbly magma inflow speed [m/s]
+CTX.PHYS.TauIn       =  0.05.*CTX.PHYS.SlugNo;   % bubbly magma inflow speed [m/s]
+CTX.PHYS.SlugLength  =  CTX.FE.D./(CTX.PHYS.SlugNo).^2;
 
 
 %*****  set initial conditions for topography  ****************************
 
 CTX.INIT.TopoMode    =  'lake';                  % initial topography mode 'flat', 'peak', 'slope'
-CTX.INIT.TopoHeight  =  10;                      % set height for initial topography
-CTX.INIT.TopoWidth   =  20;                      % set width for initial topography
-CTX.INIT.TopoXLoc    =  CTX.FE.W;                % set x-location for initial topography
+CTX.INIT.TopoHeight  =  0;                       % set height for initial topography
+CTX.INIT.TopoWidth   =  CTX.FE.W/2;              % set width for initial topography
+CTX.INIT.TopoXLoc    =  CTX.FE.W/2;              % set x-location for initial topography
 
 
 %*****  set initial condition for temperature field  **********************
@@ -84,7 +87,7 @@ CTX.INIT.TempExt     = 100;                      % lake exterior temperature
 
 CTX.INIT.MatMode       =  'lavalake';            % materials initiation mode
 CTX.INIT.Mat           =  [1,2];                 % material types for lake geometry
-CTX.INIT.MatHeight     =  CTX.FE.D/2;            % lake depth
+CTX.INIT.MatHeight     =  0;                     % lake depth
 CTX.INIT.MatWidth      =  8;                     % conduit width
 CTX.INIT.MatXLoc       =  CTX.FE.W/2;            % horizontal position of conduit mouth
 CTX.INIT.MatZLoc       =  CTX.FE.D/2;            % vertical position of base of lake
@@ -99,7 +102,7 @@ CTX.INIT.PertSmooth     =  round(25/(CTX.FE.nz/CTX.FE.D)^2);  % smoothing of ran
 CTX.INIT.PertSymmetric  =  'OFF';                % switch to symmetric noise distribution
 CTX.INIT.PertFrict      =  0;                    % amplitude of friction angle perturbation
 CTX.INIT.PertCoh        =  0;                    % amplitude of cohesion perturbation
-
+CTX.INIT.PertPhi        =  0.05;                 % amplitude of cohesion perturbation
 
 %*****  Set material properties of material types  ************************
 
@@ -109,15 +112,14 @@ CTX.PROP.G      =  [  1.e+9;   1.e+9;   1.e+9];  % material shear modulus [Pa]
 CTX.PROP.Coh    =  [  1.e+4;   1.e+4;   1.e+4];  % material cohesion [Pa]
 CTX.PROP.Frict  =  [    0.5;     0.5;     0.5];  % material friction coefficient [1]
 
-CTX.PROP.k      =  5;                            % thermal conductivity [W/m/K]
+CTX.PROP.k      =  10;                           % thermal conductivity [W/m/K]
 CTX.PROP.c      =  1200;                         % heat capacity [J/kg/K]
 CTX.PROP.alpha  =  1e-4;                         % thermal expansivity [J/kg/K]
-CTX.PROP.L      =  400e3;                        % latent heat of melting [J/kg]
+CTX.PROP.L      =  500e3;                        % latent heat of melting [J/kg]
 CTX.PROP.Tsol   =  800;                          % solidus temperature [deg C]
 CTX.PROP.Tliq   =  1100;                         % liquidus temperature [deg C]
 CTX.PROP.CntAur =  20;                           % thickness of thermal contact aureole [m]
 
-CTX.PROP.Phi0   =  0.10;                         % initial vesicularity [vol]
 CTX.PROP.kPhi   =  1e-5;                         % bubble diffusivity [m2/s]
 CTX.PROP.Rho    =  2400;                         % melt density [kg/m3]
 CTX.PROP.RhoChi =  2600;                         % crystal density
