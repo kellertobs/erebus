@@ -31,26 +31,28 @@ if strcmp(CTX.IO.LivePlot,'ON')
     n=1;
     
     FileName  =  [CTX.IO.DataDir '/' CTX.IO.RunID '/' CTX.IO.RunID '_hist.mat'];
-    load(FileName,'H');
-    
-    figure(n); n=n+1; clf;
-    subplot(3,1,1);
-    time  = H.time/60;
-    area  = pi*(CTX.FE.W/2)^2;
-    gasin = H.bot.GasIn*area; gasout = H.top.GasOut*area;
-    plot(time,gasin,'b',time,gasout,'r'); axis tight;
-    axis([min(time),max(time)+1e-12,min(min(gasin),min(gasout))./10,max(max(gasin),max(gasout)).*1.1+1e-12])
-    title('Gas flux [kg/s]')
-    subplot(3,1,2);
-    heatin = H.bot.HeatIn*area/1e6; heatout = H.top.HeatOut*area/1e6;
-    plot(time,heatin,'b',time,heatout,'r'); axis tight;
-    axis([min(time),max(time)+1e-12,min(min(heatin),min(heatout))./10,max(max(heatin),max(heatout)).*1.1+1e-12])
-    title('Heat flux [MW]')
-    subplot(3,1,3);
-    plot(time,H.top.Fsp(:,2),'b',time,H.top.Fsp(:,3),'r'); axis tight;
-    axis([min(time),max(time)+1e-12,0,max(H.top.Fsp(:,3)).*1.1+1e-12])
-    xlabel('Time [min]');
-    title('Surface flow speed [m/s]')
+    if exist(FileName,'file')
+        load(FileName,'H');
+        
+        figure(n); n=n+1; clf;
+        subplot(3,1,1);
+        time  = H.time/60;
+        area  = pi*(CTX.FE.W/2)^2;
+        gasin = H.bot.GasIn*area; gasout = H.top.GasOut*area;
+        plot(time,gasin,'b',time,gasout,'r'); axis tight;
+        axis([min(time),max(time)+1e-12,min(min(gasin),min(gasout))./10,max(max(gasin),max(gasout)).*1.1+1e-12])
+        title('Gas flux [kg/s]')
+        subplot(3,1,2);
+        heatin = H.bot.HeatIn*area/1e6; heatout = H.top.HeatOut*area/1e6;
+        plot(time,heatin,'b',time,heatout,'r'); axis tight;
+        axis([min(time),max(time)+1e-12,min(min(heatin),min(heatout)),max(max(heatin),max(heatout)).*1.1+1e-12])
+        title('Heat flux [MW]')
+        subplot(3,1,3);
+        plot(time,H.top.Fsp(:,2),'b',time,H.top.Fsp(:,3),'r'); axis tight;
+        axis([min(time),max(time)+1e-12,0,max(H.top.Fsp(:,3)).*1.1+1e-12])
+        xlabel('Time [min]');
+        title('Surface flow speed [m/s]')
+    end
     
     figure(n); n=n+1; clf;
     subplot(sp21);
@@ -85,10 +87,10 @@ if strcmp(CTX.IO.LivePlot,'ON')
     figure(n); n=n+1; clf;
     subplot(sp21);
     PlotField(CTX.SL.GPhi,CTX.FE,[CTX.IO.PlotStyle,'U']);
-    title('Degassing Rate [1/s]')
+    title('Gas Source Terms [1/s]')
     subplot(sp22);
     PlotField(CTX.SL.GTmp,CTX.FE,CTX.IO.PlotStyle);
-    title('Cooling Rate [deg C/s]')
+    title('Heat Source Terms [deg C/s]')
     drawnow
     
     figure(n); n=n+1; clf;
